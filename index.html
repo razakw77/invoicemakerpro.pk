@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Maker Pro — Har Business Ke Liye Khoobsurat Invoices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- ================= GOOGLE ADSENSE =================
+  1. Sign up at https://adsense.google.com with this website's live URL
+  2. Wait for approval (needs real content on a live domain — not a local file)
+  3. Google gives you a "publisher/client ID" like ca-pub-1234567890123456 —
+     replace YOUR_ADSENSE_CLIENT_ID below AND in every ad-slot data-ad-client
+     further down this page with that value.
+  4. For each <ins class="adsbygoogle"> block further down, create a matching
+     "ad unit" in your AdSense dashboard and paste its data-ad-slot number in.
+====================================================== -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_CLIENT_ID" crossorigin="anonymous"></script>
+<style>
+:root{
+  --bg:#F6F8F7; --surface:#FFFFFF; --surface-2:#EEF3F1;
+  --text:#0D1F1B; --muted:#5C7570; --border:#DDE7E3;
+  --primary:#0F6B5C; --primary-dark:#0A4F44; --primary-soft:#E3F0EC;
+  --accent:#E8B34D; --accent-dark:#C6912E;
+  --danger:#C1443B; --success:#1E8E5A;
+  --shadow:0 1px 2px rgba(13,31,27,.04),0 8px 24px rgba(13,31,27,.06);
+  --radius:14px;
+}
+html.dark{
+  --bg:#0B1613; --surface:#10221D; --surface-2:#16302A;
+  --text:#EAF2EF; --muted:#9DB5AE; --border:#1E3A33;
+  --primary:#2FBF9F; --primary-dark:#1E8E75; --primary-soft:#123028;
+  --accent:#F2C46B; --accent-dark:#E8B34D;
+  --shadow:0 1px 2px rgba(0,0,0,.2),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Inter',sans-serif;
+  transition:background .35s ease,color .35s ease;
+  -webkit-font-smoothing:antialiased;
+}
+.urdu{ font-family:'Noto Nastaliq Urdu',serif; direction:rtl; line-height:2.4; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; }
+
+/* ---------- URDU LANGUAGE MODE ---------- */
+body.lang-ur{ font-family:'Noto Nastaliq Urdu','Inter',sans-serif; }
+body.lang-ur h1[data-i18n-html], body.lang-ur h2[data-i18n], body.lang-ur h3[data-i18n],
+body.lang-ur p[data-i18n], body.lang-ur p[data-i18n-html], body.lang-ur label[data-i18n],
+body.lang-ur .tpl-desc[data-i18n], body.lang-ur .step p[data-i18n], body.lang-ur .pay-note[data-i18n],
+body.lang-ur .pay-note[data-i18n-html], body.lang-ur .modal-body > p[data-i18n-html],
+body.lang-ur .lbl[data-i18n]{ direction:rtl; text-align:right; line-height:2.2; }
+body.lang-ur .hero h1[data-i18n-html]{ line-height:1.9; }
+body.lang-ur select[data-i18n-opts] option{ direction:rtl; }
+.lang-toggle{
+  padding:8px 16px; border-radius:20px; background:var(--surface-2); border:1px solid var(--border);
+  font-weight:700; font-size:13px; color:var(--text); transition:.2s;
+}
+.lang-toggle:hover{ background:var(--primary-soft); color:var(--primary); border-color:var(--primary); }
+.mono{ font-family:'JetBrains Mono',monospace; }
+a{ color:inherit; text-decoration:none; }
+.container{ max-width:1200px; margin:0 auto; padding:0 24px; }
+button{ font-family:inherit; cursor:pointer; border:none; }
+input,select,textarea{ font-family:inherit; }
+
+/* ---------- TOPBAR ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{ display:flex; align-items:center; justify-content:space-between; height:72px; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px; }
+.brand-mark{
+  width:36px; height:36px; border-radius:9px;
+  background:linear-gradient(155deg,var(--primary),var(--primary-dark));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:18px;
+  box-shadow:0 4px 12px rgba(15,107,92,.35);
+}
+.nav-links{ display:flex; gap:32px; align-items:center; }
+.nav-links a{ font-size:14.5px; font-weight:500; color:var(--muted); transition:color .2s; }
+.nav-links a:hover{ color:var(--text); }
+.topbar-right{ display:flex; align-items:center; gap:14px; }
+.theme-toggle{
+  width:52px; height:30px; border-radius:20px; background:var(--surface-2);
+  border:1px solid var(--border); position:relative; transition:.25s;
+}
+.theme-toggle::after{
+  content:'☀'; position:absolute; top:2px; left:3px; width:24px; height:24px;
+  border-radius:50%; background:var(--accent); display:flex; align-items:center;
+  justify-content:center; font-size:13px; transition:.3s; color:#fff;
+}
+html.dark .theme-toggle::after{ content:'☾'; left:25px; background:var(--primary); }
+.btn{
+  padding:11px 22px; border-radius:10px; font-weight:600; font-size:14.5px;
+  transition:.2s; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-primary{ background:var(--primary); color:#fff; box-shadow:0 6px 16px rgba(15,107,92,.3); }
+.btn-primary:hover{ background:var(--primary-dark); transform:translateY(-1px); }
+.btn-ghost{ background:transparent; color:var(--text); border:1px solid var(--border); }
+.btn-ghost:hover{ background:var(--surface-2); }
+.btn-gold{ background:var(--accent); color:#291d05; box-shadow:0 6px 16px rgba(232,179,77,.35); }
+.btn-gold:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; }
+
+/* ---------- HERO ---------- */
+.hero{ padding:88px 0 60px; position:relative; overflow:hidden; }
+.hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 14px;
+  background:var(--primary-soft); color:var(--primary); border-radius:30px;
+  font-size:13px; font-weight:600; margin-bottom:22px;
+}
+.eyebrow::before{ content:'●'; font-size:8px; }
+.hero h1{ font-size:52px; font-weight:600; line-height:1.12; letter-spacing:-.5px; margin-bottom:20px; }
+.hero h1 em{ font-style:italic; color:var(--primary); }
+.hero p.lead{ font-size:17.5px; color:var(--muted); line-height:1.7; margin-bottom:32px; max-width:520px; }
+.hero-ctas{ display:flex; gap:14px; margin-bottom:36px; }
+.trust-row{ display:flex; gap:26px; flex-wrap:wrap; }
+.trust-item{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--muted); font-weight:500; }
+.trust-item b{ color:var(--text); }
+
+/* floating invoice mock */
+.hero-visual{ position:relative; }
+.mock-card{
+  background:var(--surface); border-radius:18px; box-shadow:var(--shadow);
+  border:1px solid var(--border); padding:26px 26px 22px; width:100%; max-width:400px;
+  margin-left:auto; position:relative; z-index:2;
+  animation:floatIn .9s cubic-bezier(.16,1,.3,1);
+}
+@keyframes floatIn{ from{ opacity:0; transform:translateY(24px) scale(.97);} to{opacity:1; transform:none;} }
+.mock-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
+.mock-logo{ width:40px; height:40px; border-radius:8px; background:var(--primary); }
+.mock-badge{ background:var(--primary-soft); color:var(--primary); font-size:11px; font-weight:700; padding:5px 10px; border-radius:6px; letter-spacing:.5px; }
+.mock-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--border); font-size:13px; color:var(--muted); }
+.mock-row span:last-child{ color:var(--text); font-weight:600; }
+.mock-total{ display:flex; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:2px solid var(--text); font-weight:700; font-size:16px; }
+.mock-stamp{
+  position:absolute; bottom:-16px; right:-14px; width:84px; height:84px; border-radius:50%;
+  border:3px solid var(--accent); color:var(--accent-dark); display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:12px; transform:rotate(-14deg); background:var(--surface);
+  box-shadow:0 8px 20px rgba(0,0,0,.12); animation:stampIn 1.4s cubic-bezier(.16,1,.3,1) .4s backwards;
+}
+@keyframes stampIn{ from{opacity:0; transform:rotate(-14deg) scale(2);} to{opacity:1; transform:rotate(-14deg) scale(1);} }
+.blob{ position:absolute; border-radius:50%; filter:blur(60px); opacity:.35; z-index:0; }
+.blob1{ width:340px; height:340px; background:var(--primary); top:-100px; right:10%; }
+.blob2{ width:260px; height:260px; background:var(--accent); bottom:-80px; left:0; opacity:.2; }
+
+/* ---------- LIVE CLOCK BAR ---------- */
+.clock-bar{
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff; padding:9px 24px; position:relative; overflow:hidden; z-index:60;
+}
+.clock-bar::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(600px 60px at 20% 0%, rgba(255,255,255,.10), transparent 60%);
+  pointer-events:none;
+}
+.clock-inner{
+  max-width:1200px; margin:0 auto; display:flex; align-items:center;
+  justify-content:center; gap:18px; flex-wrap:wrap;
+}
+.clock-icon{
+  width:22px; height:22px; border-radius:50%; border:1.6px solid rgba(255,255,255,.85);
+  position:relative; flex-shrink:0;
+}
+.clock-icon::before, .clock-icon::after{
+  content:''; position:absolute; left:50%; top:50%; background:#fff; border-radius:2px;
+  transform-origin:bottom center;
+}
+.clock-icon::before{ width:1.6px; height:6px; margin-left:-0.8px; margin-top:-6px; animation:clockMin 60s linear infinite; }
+.clock-icon::after{ width:1.6px; height:4.5px; margin-left:-0.8px; margin-top:-4.5px; animation:clockHr 43200s linear infinite; }
+@keyframes clockMin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+@keyframes clockHr{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+.clock-time{
+  font-family:'JetBrains Mono',monospace; font-weight:600; font-size:15px;
+  letter-spacing:.5px; display:flex; align-items:baseline; gap:2px;
+}
+.clock-time .secs{ opacity:.75; font-size:13px; min-width:24px; display:inline-block; }
+.clock-sep{ width:1px; height:14px; background:rgba(255,255,255,.3); }
+.clock-date{ font-size:13px; font-weight:500; color:rgba(255,255,255,.92); letter-spacing:.2px; }
+.clock-zone{
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px;
+  background:rgba(255,255,255,.16); padding:3px 9px; border-radius:20px; color:#fff;
+}
+.clock-country-select{
+  appearance:none; -webkit-appearance:none;
+  background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.28);
+  border-radius:20px; padding:5px 30px 5px 12px; font-size:12.5px; font-weight:600;
+  font-family:inherit; cursor:pointer; max-width:220px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 9px center; background-size:13px;
+  transition:.2s;
+}
+.clock-country-select:hover{ background-color:rgba(255,255,255,.22); }
+.clock-country-select:focus{ outline:none; border-color:rgba(255,255,255,.6); }
+.clock-country-select option{ color:#0D1F1B; background:#fff; }
+@media (max-width:560px){
+  .clock-inner{ gap:10px; }
+  .clock-date{ display:none; }
+  .clock-sep{ display:none; }
+  .clock-country-select{ max-width:150px; }
+}
+
+/* ---------- AD SLOTS ---------- */
+.ad-slot{
+  max-width:1200px; margin:0 auto; padding:18px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.ad-slot .ad-label{ font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); }
+.ad-slot .adsbygoogle{ width:100%; min-height:90px; }
+
+/* ---------- SECTION SHARED ---------- */
+.section{ padding:80px 0; }
+.section-head{ text-align:center; max-width:640px; margin:0 auto 48px; }
+.section-head .eyebrow{ display:inline-flex; }
+.section-head h2{ font-size:36px; font-weight:600; margin:14px 0 12px; letter-spacing:-.3px; }
+.section-head p{ color:var(--muted); font-size:16px; line-height:1.6; }
+.alt-bg{ background:var(--surface-2); }
+
+/* ---------- TEMPLATES ---------- */
+.template-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.tpl-card{
+  background:var(--surface); border:2px solid var(--border); border-radius:16px; padding:20px;
+  cursor:pointer; transition:.25s; position:relative;
+}
+.tpl-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow); }
+.tpl-card.selected{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.tpl-preview{ height:150px; border-radius:10px; margin-bottom:14px; position:relative; overflow:hidden; }
+.tpl-preview .bar{ position:absolute; height:8px; border-radius:3px; }
+.tpl-name{ font-weight:700; font-size:15px; margin-bottom:3px; }
+.tpl-desc{ font-size:12.5px; color:var(--muted); }
+.tpl-check{
+  position:absolute; top:14px; right:14px; width:24px; height:24px; border-radius:50%;
+  background:var(--primary); color:#fff; display:none; align-items:center; justify-content:center; font-size:13px;
+}
+.tpl-card.selected .tpl-check{ display:flex; }
+
+/* Template preview color variants */
+.pv-modern{ background:linear-gradient(135deg,#0F6B5C,#123028); }
+.pv-modern .bar{ background:#E8B34D; }
+.pv-minimal{ background:#fff; border:1px solid #e5e5e5; }
+.pv-minimal .bar{ background:#111; }
+.pv-corporate{ background:#0B2545; }
+.pv-corporate .bar{ background:#8FB8E0; }
+.pv-creative{ background:linear-gradient(135deg,#F2545B,#8E44AD); }
+.pv-creative .bar{ background:#fff; }
+.pv-classic{ background:#F5EFE4; }
+.pv-classic .bar{ background:#7A5230; }
+.pv-bold{ background:#111111; }
+.pv-bold .bar{ background:#E8B34D; }
+
+/* ---------- BUILDER ---------- */
+.builder-grid{ display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+.panel{
+  background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:26px; box-shadow:var(--shadow);
+}
+.panel + .panel{ margin-top:20px; }
+.panel h3{ font-size:16px; font-weight:700; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.panel h3 .num{
+  width:22px; height:22px; border-radius:50%; background:var(--primary-soft); color:var(--primary);
+  font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:800;
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.field{ margin-bottom:12px; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+.field input, .field select, .field textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:9px;
+  background:var(--bg); color:var(--text); font-size:13.5px; transition:.2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+.logo-upload{
+  border:2px dashed var(--border); border-radius:12px; padding:18px; text-align:center;
+  cursor:pointer; transition:.2s; display:flex; align-items:center; gap:14px;
+}
+.logo-upload:hover{ border-color:var(--primary); background:var(--primary-soft); }
+.logo-preview{ width:50px; height:50px; border-radius:8px; object-fit:cover; background:var(--surface-2); }
+.items-table{ width:100%; border-collapse:collapse; margin-bottom:10px; }
+.items-table th{ text-align:left; font-size:11px; color:var(--muted); font-weight:600; padding-bottom:8px; }
+.items-table td{ padding:6px 4px; }
+.items-table input{ padding:8px; font-size:13px; }
+.item-remove{ background:none; color:var(--danger); font-size:16px; padding:4px 8px; border-radius:6px; }
+.item-remove:hover{ background:rgba(193,68,59,.1); }
+.add-item-btn{
+  width:100%; padding:11px; border-radius:9px; border:1.5px dashed var(--border); background:transparent;
+  color:var(--primary); font-weight:600; font-size:13.5px; transition:.2s;
+}
+.add-item-btn:hover{ background:var(--primary-soft); border-color:var(--primary); }
+.totals-box{ margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+.totals-row{ display:flex; justify-content:space-between; font-size:13.5px; padding:6px 0; color:var(--muted); }
+.totals-row.grand{ color:var(--text); font-weight:800; font-size:18px; border-top:2px solid var(--text); margin-top:6px; padding-top:12px; }
+.mini-input{ width:70px !important; padding:6px 8px !important; text-align:right; }
+
+/* ---------- PREVIEW ---------- */
+.preview-sticky{ position:sticky; top:96px; }
+.preview-wrap{ background:var(--surface-2); border-radius:20px; padding:22px; }
+.preview-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.preview-toolbar span{ font-size:12.5px; color:var(--muted); font-weight:600; }
+#invoicePreview{
+  background:#fff; color:#1a1a1a; border-radius:12px; padding:40px 38px; min-height:560px;
+  box-shadow:0 20px 50px rgba(0,0,0,.18); font-size:13.5px; position:relative; overflow:hidden;
+}
+.inv-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:34px; }
+.inv-logo-box img{ max-width:70px; max-height:70px; border-radius:6px; }
+.inv-biz-name{ font-family:'Fraunces',serif; font-weight:700; font-size:20px; margin-top:8px; }
+.inv-biz-meta{ font-size:11.5px; color:#666; line-height:1.6; margin-top:4px; }
+.inv-title-block{ text-align:right; }
+.inv-title{ font-family:'Fraunces',serif; font-size:28px; font-weight:700; letter-spacing:1px; }
+.inv-meta-line{ font-size:11.5px; color:#666; margin-top:4px; }
+.inv-parties{ display:flex; justify-content:space-between; margin-bottom:26px; gap:20px; }
+.inv-parties .lbl{ font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#999; font-weight:700; margin-bottom:6px; }
+.inv-parties .name{ font-weight:700; font-size:14px; }
+.inv-table{ width:100%; border-collapse:collapse; margin-bottom:24px; }
+.inv-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; padding:10px 8px; color:#666; }
+.inv-table td{ padding:11px 8px; font-size:12.5px; }
+.inv-table th:last-child, .inv-table td:last-child{ text-align:right; }
+.inv-totals{ margin-left:auto; width:230px; }
+.inv-totals .row{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; color:#555; }
+.inv-totals .row.grand{ font-weight:800; font-size:16px; color:#111; border-top:2px solid #111; margin-top:6px; padding-top:10px; }
+.inv-footer-note{ margin-top:30px; font-size:11.5px; color:#777; border-top:1px solid #eee; padding-top:16px; }
+.paid-stamp{
+  position:absolute; top:44%; left:50%; transform:translate(-50%,-50%) rotate(-18deg); display:none;
+  border:5px solid #1E8E5A; color:#1E8E5A; font-family:'Fraunces',serif; font-weight:800; font-size:44px;
+  padding:8px 26px; border-radius:12px; opacity:.85; letter-spacing:3px;
+}
+.paid-stamp.show{ display:block; animation:stampSlam .5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes stampSlam{ from{ opacity:0; transform:translate(-50%,-50%) rotate(-18deg) scale(2.4);} to{opacity:.85; transform:translate(-50%,-50%) rotate(-18deg) scale(1);} }
+
+/* template skins applied to preview */
+#invoicePreview.tpl-modern .inv-title, #invoicePreview.tpl-modern .inv-biz-name{ color:#0F6B5C; }
+#invoicePreview.tpl-modern .inv-table th{ background:#0F6B5C; color:#fff; border-radius:6px; }
+#invoicePreview.tpl-modern .inv-table th:first-child{ border-radius:6px 0 0 6px; }
+#invoicePreview.tpl-modern .inv-table th:last-child{ border-radius:0 6px 6px 0; }
+#invoicePreview.tpl-modern .inv-totals .row.grand{ color:#0F6B5C; border-color:#0F6B5C; }
+
+#invoicePreview.tpl-minimal{ padding:48px; }
+#invoicePreview.tpl-minimal .inv-title{ font-size:22px; letter-spacing:4px; color:#111; }
+#invoicePreview.tpl-minimal .inv-table th{ border-bottom:1.5px solid #111; }
+#invoicePreview.tpl-minimal .inv-totals .row.grand{ border-color:#111; }
+
+#invoicePreview.tpl-corporate .inv-title, #invoicePreview.tpl-corporate .inv-biz-name{ color:#0B2545; }
+#invoicePreview.tpl-corporate .inv-table th{ background:#0B2545; color:#fff; }
+#invoicePreview.tpl-corporate{ border-top:8px solid #0B2545; }
+#invoicePreview.tpl-corporate .inv-totals .row.grand{ color:#0B2545; border-color:#0B2545; }
+
+#invoicePreview.tpl-creative{ border-radius:12px; }
+#invoicePreview.tpl-creative .inv-title{ background:linear-gradient(135deg,#F2545B,#8E44AD); -webkit-background-clip:text; background-clip:text; color:transparent; }
+#invoicePreview.tpl-creative .inv-table th{ background:linear-gradient(135deg,#F2545B,#8E44AD); color:#fff; }
+#invoicePreview.tpl-creative .inv-table th:first-child{ border-radius:6px 0 0 6px; }
+#invoicePreview.tpl-creative .inv-table th:last-child{ border-radius:0 6px 6px 0; }
+#invoicePreview.tpl-creative .inv-totals .row.grand{ color:#8E44AD; border-color:#8E44AD; }
+
+#invoicePreview.tpl-classic{ background:#FBF8F1; }
+#invoicePreview.tpl-classic .inv-title, #invoicePreview.tpl-classic .inv-biz-name{ color:#7A5230; font-family:'Fraunces',serif; }
+#invoicePreview.tpl-classic .inv-table th{ border-bottom:2px solid #7A5230; color:#7A5230; }
+#invoicePreview.tpl-classic .inv-totals .row.grand{ color:#7A5230; border-color:#7A5230; }
+
+#invoicePreview.tpl-bold{ background:#111; color:#eee; }
+#invoicePreview.tpl-bold .inv-title{ color:#E8B34D; }
+#invoicePreview.tpl-bold .inv-biz-name{ color:#fff; }
+#invoicePreview.tpl-bold .inv-biz-meta, #invoicePreview.tpl-bold .inv-meta-line, #invoicePreview.tpl-bold .inv-parties .lbl{ color:#999; }
+#invoicePreview.tpl-bold .inv-parties .name{ color:#fff; }
+#invoicePreview.tpl-bold .inv-table th{ color:#E8B34D; border-bottom:1px solid #333; }
+#invoicePreview.tpl-bold .inv-table td{ color:#ddd; }
+#invoicePreview.tpl-bold .inv-totals .row{ color:#aaa; }
+#invoicePreview.tpl-bold .inv-totals .row.grand{ color:#E8B34D; border-color:#E8B34D; }
+#invoicePreview.tpl-bold .inv-footer-note{ color:#888; border-color:#333; }
+
+/* ---------- HOW IT WORKS ---------- */
+.steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+.step{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+.step .step-num{ font-family:'Fraunces',serif; font-size:32px; color:var(--primary); font-weight:600; margin-bottom:10px; }
+.step h4{ font-size:15px; margin-bottom:6px; font-weight:700; }
+.step p{ font-size:13px; color:var(--muted); line-height:1.6; }
+
+/* ---------- PAYMENT MODAL ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(5,15,12,.55); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; z-index:200; padding:20px;
+}
+.modal-overlay.open{ display:flex; }
+.modal{
+  background:var(--surface); border-radius:20px; width:100%; max-width:560px; max-height:88vh;
+  overflow-y:auto; box-shadow:0 30px 80px rgba(0,0,0,.4); animation:modalIn .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes modalIn{ from{opacity:0; transform:translateY(20px) scale(.97);} to{opacity:1; transform:none;} }
+.modal-head{ display:flex; justify-content:space-between; align-items:center; padding:22px 24px; border-bottom:1px solid var(--border); }
+.modal-head h3{ font-size:17px; font-weight:700; }
+.modal-close{ background:var(--surface-2); width:32px; height:32px; border-radius:50%; font-size:15px; color:var(--muted); }
+.modal-body{ padding:22px 24px; }
+.pay-summary{ background:var(--primary-soft); border-radius:12px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.pay-summary .amt{ font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--primary); }
+.pay-tabs{ display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--border); }
+.pay-tab{ padding:10px 4px; font-size:13.5px; font-weight:600; color:var(--muted); border-bottom:2px solid transparent; background:none; }
+.pay-tab.active{ color:var(--primary); border-color:var(--primary); }
+.pay-methods{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.pay-method{
+  border:1.5px solid var(--border); border-radius:11px; padding:12px 8px; text-align:center; cursor:pointer;
+  transition:.15s; font-size:12px; font-weight:600;
+}
+.pay-method:hover{ border-color:var(--primary); }
+.pay-method.picked{ border-color:var(--primary); background:var(--primary-soft); color:var(--primary); }
+.pay-method .pm-icon{ width:34px; height:34px; border-radius:8px; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#fff; }
+.pay-form{ margin-top:18px; display:none; }
+.pay-form.show{ display:block; }
+.pay-note{ font-size:11.5px; color:var(--muted); margin-top:14px; line-height:1.6; background:var(--surface-2); padding:10px 12px; border-radius:9px; }
+.pay-processing{ display:none; text-align:center; padding:30px 10px; }
+.pay-processing.show{ display:block; }
+.spinner{ width:48px; height:48px; border:4px solid var(--border); border-top-color:var(--primary); border-radius:50%; margin:0 auto 18px; animation:spin .8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+.pay-success{ display:none; text-align:center; padding:20px 10px; }
+.pay-success.show{ display:block; }
+.success-check{ width:64px; height:64px; border-radius:50%; background:var(--success); color:#fff; font-size:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; animation:stampIn .5s; }
+
+/* ---------- FOOTER ---------- */
+.footer{ border-top:1px solid var(--border); padding:44px 0; }
+.footer-inner{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+.footer p{ font-size:13px; color:var(--muted); }
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:980px){
+  .hero-grid{ grid-template-columns:1fr; }
+  .hero-visual{ order:-1; }
+  .nav-links{ display:none; }
+  .template-grid{ grid-template-columns:repeat(2,1fr); }
+  .builder-grid{ grid-template-columns:1fr; }
+  .preview-sticky{ position:static; }
+  .steps{ grid-template-columns:repeat(2,1fr); }
+  .field-row{ grid-template-columns:1fr; }
+  .pay-methods{ grid-template-columns:repeat(2,1fr); }
+  .hero h1{ font-size:38px; }
+}
+
+/* ---------- PRINT ---------- */
+#printArea{ display:none; }
+@media print{
+  @page{ size:A4; margin:12mm; }
+  html, body{ height:auto !important; margin:0 !important; padding:0 !important; background:#fff !important; }
+  body > *:not(#printArea){ display:none !important; }
+  #printArea{ display:block !important; }
+  #invoicePreview{ box-shadow:none !important; border-radius:0 !important; width:100% !important; min-height:0 !important; }
+}
+</style>
+</head>
+<body>
+<!-- LIVE CLOCK BAR -->
+<div class="clock-bar">
+  <div class="clock-inner">
+    <span class="clock-icon" aria-hidden="true"></span>
+    <span class="clock-time" id="liveClockTime"><span id="clockHMS">--:--</span><span class="secs" id="clockSecs">--</span> <span id="clockAmPm"></span></span>
+    <span class="clock-sep" aria-hidden="true"></span>
+    <span class="clock-date" id="liveClockDate">Loading date…</span>
+    <span class="clock-sep" aria-hidden="true"></span>
+    <select class="clock-country-select" id="clockCountrySelect" aria-label="Select country to view its local time"></select>
+  </div>
+</div>
+<div id="fallbackBanner" style="display:none;background:#FFF3D6;color:#8A6100;font-size:12.5px;font-weight:600;text-align:center;padding:8px 14px;" data-i18n="fallback_notice">⚠ Offline preview mode — data is temporary and won't sync across devices.</div>
+<script>
+// World country list: ISO code, name, a representative IANA timezone, and flag emoji.
+const WORLD_COUNTRIES = [{"code":"AF","name":"Afghanistan","tz":"Asia/Kabul","flag":"🇦🇫"},{"code":"AX","name":"Åland Islands","tz":"Europe/Helsinki","flag":"🇦🇽"},{"code":"AL","name":"Albania","tz":"Europe/Tirane","flag":"🇦🇱"},{"code":"DZ","name":"Algeria","tz":"Africa/Algiers","flag":"🇩🇿"},{"code":"AS","name":"American Samoa","tz":"Pacific/Pago_Pago","flag":"🇦🇸"},{"code":"AD","name":"Andorra","tz":"Europe/Andorra","flag":"🇦🇩"},{"code":"AO","name":"Angola","tz":"Africa/Lagos","flag":"🇦🇴"},{"code":"AI","name":"Anguilla","tz":"America/Puerto_Rico","flag":"🇦🇮"},{"code":"AQ","name":"Antarctica","tz":"Antarctica/Casey","flag":"🇦🇶"},{"code":"AG","name":"Antigua and Barbuda","tz":"America/Puerto_Rico","flag":"🇦🇬"},{"code":"AR","name":"Argentina","tz":"America/Argentina/Buenos_Aires","flag":"🇦🇷"},{"code":"AM","name":"Armenia","tz":"Asia/Yerevan","flag":"🇦🇲"},{"code":"AW","name":"Aruba","tz":"America/Puerto_Rico","flag":"🇦🇼"},{"code":"AU","name":"Australia","tz":"Australia/Sydney","flag":"🇦🇺"},{"code":"AT","name":"Austria","tz":"Europe/Vienna","flag":"🇦🇹"},{"code":"AZ","name":"Azerbaijan","tz":"Asia/Baku","flag":"🇦🇿"},{"code":"BS","name":"Bahamas","tz":"America/Nassau","flag":"🇧🇸"},{"code":"BH","name":"Bahrain","tz":"Asia/Qatar","flag":"🇧🇭"},{"code":"BD","name":"Bangladesh","tz":"Asia/Dhaka","flag":"🇧🇩"},{"code":"BB","name":"Barbados","tz":"America/Barbados","flag":"🇧🇧"},{"code":"BY","name":"Belarus","tz":"Europe/Minsk","flag":"🇧🇾"},{"code":"BE","name":"Belgium","tz":"Europe/Brussels","flag":"🇧🇪"},{"code":"BZ","name":"Belize","tz":"America/Belize","flag":"🇧🇿"},{"code":"BJ","name":"Benin","tz":"Africa/Lagos","flag":"🇧🇯"},{"code":"BM","name":"Bermuda","tz":"Atlantic/Bermuda","flag":"🇧🇲"},{"code":"BT","name":"Bhutan","tz":"Asia/Thimphu","flag":"🇧🇹"},{"code":"BO","name":"Bolivia","tz":"America/La_Paz","flag":"🇧🇴"},{"code":"BA","name":"Bosnia and Herzegovina","tz":"Europe/Belgrade","flag":"🇧🇦"},{"code":"BW","name":"Botswana","tz":"Africa/Maputo","flag":"🇧🇼"},{"code":"BR","name":"Brazil","tz":"America/Sao_Paulo","flag":"🇧🇷"},{"code":"IO","name":"British Indian Ocean Territory","tz":"Indian/Chagos","flag":"🇮🇴"},{"code":"BN","name":"Brunei","tz":"Asia/Kuching","flag":"🇧🇳"},{"code":"BG","name":"Bulgaria","tz":"Europe/Sofia","flag":"🇧🇬"},{"code":"BF","name":"Burkina Faso","tz":"Africa/Abidjan","flag":"🇧🇫"},{"code":"BI","name":"Burundi","tz":"Africa/Maputo","flag":"🇧🇮"},{"code":"CV","name":"Cabo Verde","tz":"Atlantic/Cape_Verde","flag":"🇨🇻"},{"code":"KH","name":"Cambodia","tz":"Asia/Bangkok","flag":"🇰🇭"},{"code":"CM","name":"Cameroon","tz":"Africa/Lagos","flag":"🇨🇲"},{"code":"CA","name":"Canada","tz":"America/Toronto","flag":"🇨🇦"},{"code":"BQ","name":"Caribbean Netherlands","tz":"America/Puerto_Rico","flag":"🇧🇶"},{"code":"KY","name":"Cayman Islands","tz":"America/Panama","flag":"🇰🇾"},{"code":"CF","name":"Central African Republic","tz":"Africa/Lagos","flag":"🇨🇫"},{"code":"TD","name":"Chad","tz":"Africa/Ndjamena","flag":"🇹🇩"},{"code":"CL","name":"Chile","tz":"America/Santiago","flag":"🇨🇱"},{"code":"CN","name":"China","tz":"Asia/Shanghai","flag":"🇨🇳"},{"code":"CX","name":"Christmas Island","tz":"Asia/Bangkok","flag":"🇨🇽"},{"code":"CC","name":"Cocos Islands","tz":"Asia/Yangon","flag":"🇨🇨"},{"code":"CO","name":"Colombia","tz":"America/Bogota","flag":"🇨🇴"},{"code":"KM","name":"Comoros","tz":"Africa/Nairobi","flag":"🇰🇲"},{"code":"CK","name":"Cook Islands","tz":"Pacific/Rarotonga","flag":"🇨🇰"},{"code":"CR","name":"Costa Rica","tz":"America/Costa_Rica","flag":"🇨🇷"},{"code":"HR","name":"Croatia","tz":"Europe/Belgrade","flag":"🇭🇷"},{"code":"CU","name":"Cuba","tz":"America/Havana","flag":"🇨🇺"},{"code":"CW","name":"Curaçao","tz":"America/Puerto_Rico","flag":"🇨🇼"},{"code":"CY","name":"Cyprus","tz":"Asia/Famagusta","flag":"🇨🇾"},{"code":"CZ","name":"Czechia","tz":"Europe/Prague","flag":"🇨🇿"},{"code":"CD","name":"Democratic Republic of the Congo","tz":"Africa/Kinshasa","flag":"🇨🇩"},{"code":"DK","name":"Denmark","tz":"Europe/Berlin","flag":"🇩🇰"},{"code":"DJ","name":"Djibouti","tz":"Africa/Nairobi","flag":"🇩🇯"},{"code":"DM","name":"Dominica","tz":"America/Puerto_Rico","flag":"🇩🇲"},{"code":"DO","name":"Dominican Republic","tz":"America/Santo_Domingo","flag":"🇩🇴"},{"code":"EC","name":"Ecuador","tz":"America/Guayaquil","flag":"🇪🇨"},{"code":"EG","name":"Egypt","tz":"Africa/Cairo","flag":"🇪🇬"},{"code":"SV","name":"El Salvador","tz":"America/El_Salvador","flag":"🇸🇻"},{"code":"GQ","name":"Equatorial Guinea","tz":"Africa/Lagos","flag":"🇬🇶"},{"code":"ER","name":"Eritrea","tz":"Africa/Nairobi","flag":"🇪🇷"},{"code":"EE","name":"Estonia","tz":"Europe/Tallinn","flag":"🇪🇪"},{"code":"SZ","name":"Eswatini","tz":"Africa/Johannesburg","flag":"🇸🇿"},{"code":"ET","name":"Ethiopia","tz":"Africa/Nairobi","flag":"🇪🇹"},{"code":"FK","name":"Falkland Islands","tz":"Atlantic/Stanley","flag":"🇫🇰"},{"code":"FO","name":"Faroe Islands","tz":"Atlantic/Faroe","flag":"🇫🇴"},{"code":"FJ","name":"Fiji","tz":"Pacific/Fiji","flag":"🇫🇯"},{"code":"FI","name":"Finland","tz":"Europe/Helsinki","flag":"🇫🇮"},{"code":"FR","name":"France","tz":"Europe/Paris","flag":"🇫🇷"},{"code":"GF","name":"French Guiana","tz":"America/Cayenne","flag":"🇬🇫"},{"code":"PF","name":"French Polynesia","tz":"Pacific/Gambier","flag":"🇵🇫"},{"code":"TF","name":"French Southern Territories","tz":"Indian/Kerguelen","flag":"🇹🇫"},{"code":"GA","name":"Gabon","tz":"Africa/Lagos","flag":"🇬🇦"},{"code":"GM","name":"Gambia","tz":"Africa/Abidjan","flag":"🇬🇲"},{"code":"GE","name":"Georgia","tz":"Asia/Tbilisi","flag":"🇬🇪"},{"code":"DE","name":"Germany","tz":"Europe/Berlin","flag":"🇩🇪"},{"code":"GH","name":"Ghana","tz":"Africa/Abidjan","flag":"🇬🇭"},{"code":"GI","name":"Gibraltar","tz":"Europe/Gibraltar","flag":"🇬🇮"},{"code":"GR","name":"Greece","tz":"Europe/Athens","flag":"🇬🇷"},{"code":"GL","name":"Greenland","tz":"America/Nuuk","flag":"🇬🇱"},{"code":"GD","name":"Grenada","tz":"America/Puerto_Rico","flag":"🇬🇩"},{"code":"GP","name":"Guadeloupe","tz":"America/Puerto_Rico","flag":"🇬🇵"},{"code":"GU","name":"Guam","tz":"Pacific/Guam","flag":"🇬🇺"},{"code":"GT","name":"Guatemala","tz":"America/Guatemala","flag":"🇬🇹"},{"code":"GG","name":"Guernsey","tz":"Europe/London","flag":"🇬🇬"},{"code":"GN","name":"Guinea","tz":"Africa/Abidjan","flag":"🇬🇳"},{"code":"GW","name":"Guinea-Bissau","tz":"Africa/Bissau","flag":"🇬🇼"},{"code":"GY","name":"Guyana","tz":"America/Guyana","flag":"🇬🇾"},{"code":"HT","name":"Haiti","tz":"America/Port-au-Prince","flag":"🇭🇹"},{"code":"VA","name":"Holy See","tz":"Europe/Rome","flag":"🇻🇦"},{"code":"HN","name":"Honduras","tz":"America/Tegucigalpa","flag":"🇭🇳"},{"code":"HK","name":"Hong Kong","tz":"Asia/Hong_Kong","flag":"🇭🇰"},{"code":"HU","name":"Hungary","tz":"Europe/Budapest","flag":"🇭🇺"},{"code":"IS","name":"Iceland","tz":"Atlantic/Reykjavik","flag":"🇮🇸"},{"code":"IN","name":"India","tz":"Asia/Kolkata","flag":"🇮🇳"},{"code":"ID","name":"Indonesia","tz":"Asia/Jakarta","flag":"🇮🇩"},{"code":"IR","name":"Iran","tz":"Asia/Tehran","flag":"🇮🇷"},{"code":"IQ","name":"Iraq","tz":"Asia/Baghdad","flag":"🇮🇶"},{"code":"IE","name":"Ireland","tz":"Europe/Dublin","flag":"🇮🇪"},{"code":"IM","name":"Isle of Man","tz":"Europe/London","flag":"🇮🇲"},{"code":"IL","name":"Israel","tz":"Asia/Jerusalem","flag":"🇮🇱"},{"code":"IT","name":"Italy","tz":"Europe/Rome","flag":"🇮🇹"},{"code":"CI","name":"Ivory Coast","tz":"Africa/Abidjan","flag":"🇨🇮"},{"code":"JM","name":"Jamaica","tz":"America/Jamaica","flag":"🇯🇲"},{"code":"JP","name":"Japan","tz":"Asia/Tokyo","flag":"🇯🇵"},{"code":"JE","name":"Jersey","tz":"Europe/London","flag":"🇯🇪"},{"code":"JO","name":"Jordan","tz":"Asia/Amman","flag":"🇯🇴"},{"code":"KZ","name":"Kazakhstan","tz":"Asia/Almaty","flag":"🇰🇿"},{"code":"KE","name":"Kenya","tz":"Africa/Nairobi","flag":"🇰🇪"},{"code":"KI","name":"Kiribati","tz":"Pacific/Tarawa","flag":"🇰🇮"},{"code":"KW","name":"Kuwait","tz":"Asia/Riyadh","flag":"🇰🇼"},{"code":"KG","name":"Kyrgyzstan","tz":"Asia/Bishkek","flag":"🇰🇬"},{"code":"LA","name":"Laos","tz":"Asia/Bangkok","flag":"🇱🇦"},{"code":"LV","name":"Latvia","tz":"Europe/Riga","flag":"🇱🇻"},{"code":"LB","name":"Lebanon","tz":"Asia/Beirut","flag":"🇱🇧"},{"code":"LS","name":"Lesotho","tz":"Africa/Johannesburg","flag":"🇱🇸"},{"code":"LR","name":"Liberia","tz":"Africa/Monrovia","flag":"🇱🇷"},{"code":"LY","name":"Libya","tz":"Africa/Tripoli","flag":"🇱🇾"},{"code":"LI","name":"Liechtenstein","tz":"Europe/Zurich","flag":"🇱🇮"},{"code":"LT","name":"Lithuania","tz":"Europe/Vilnius","flag":"🇱🇹"},{"code":"LU","name":"Luxembourg","tz":"Europe/Brussels","flag":"🇱🇺"},{"code":"MO","name":"Macao","tz":"Asia/Macau","flag":"🇲🇴"},{"code":"MG","name":"Madagascar","tz":"Africa/Nairobi","flag":"🇲🇬"},{"code":"MW","name":"Malawi","tz":"Africa/Maputo","flag":"🇲🇼"},{"code":"MY","name":"Malaysia","tz":"Asia/Kuala_Lumpur","flag":"🇲🇾"},{"code":"MV","name":"Maldives","tz":"Indian/Maldives","flag":"🇲🇻"},{"code":"ML","name":"Mali","tz":"Africa/Abidjan","flag":"🇲🇱"},{"code":"MT","name":"Malta","tz":"Europe/Malta","flag":"🇲🇹"},{"code":"MH","name":"Marshall Islands","tz":"Pacific/Kwajalein","flag":"🇲🇭"},{"code":"MQ","name":"Martinique","tz":"America/Martinique","flag":"🇲🇶"},{"code":"MR","name":"Mauritania","tz":"Africa/Abidjan","flag":"🇲🇷"},{"code":"MU","name":"Mauritius","tz":"Indian/Mauritius","flag":"🇲🇺"},{"code":"YT","name":"Mayotte","tz":"Africa/Nairobi","flag":"🇾🇹"},{"code":"MX","name":"Mexico","tz":"America/Mexico_City","flag":"🇲🇽"},{"code":"FM","name":"Micronesia","tz":"Pacific/Pohnpei","flag":"🇫🇲"},{"code":"MD","name":"Moldova","tz":"Europe/Chisinau","flag":"🇲🇩"},{"code":"MC","name":"Monaco","tz":"Europe/Paris","flag":"🇲🇨"},{"code":"MN","name":"Mongolia","tz":"Asia/Ulaanbaatar","flag":"🇲🇳"},{"code":"ME","name":"Montenegro","tz":"Europe/Belgrade","flag":"🇲🇪"},{"code":"MS","name":"Montserrat","tz":"America/Puerto_Rico","flag":"🇲🇸"},{"code":"MA","name":"Morocco","tz":"Africa/Casablanca","flag":"🇲🇦"},{"code":"MZ","name":"Mozambique","tz":"Africa/Maputo","flag":"🇲🇿"},{"code":"MM","name":"Myanmar","tz":"Asia/Yangon","flag":"🇲🇲"},{"code":"NA","name":"Namibia","tz":"Africa/Windhoek","flag":"🇳🇦"},{"code":"NR","name":"Nauru","tz":"Pacific/Nauru","flag":"🇳🇷"},{"code":"NP","name":"Nepal","tz":"Asia/Kathmandu","flag":"🇳🇵"},{"code":"NL","name":"Netherlands","tz":"Europe/Brussels","flag":"🇳🇱"},{"code":"NC","name":"New Caledonia","tz":"Pacific/Noumea","flag":"🇳🇨"},{"code":"NZ","name":"New Zealand","tz":"Pacific/Auckland","flag":"🇳🇿"},{"code":"NI","name":"Nicaragua","tz":"America/Managua","flag":"🇳🇮"},{"code":"NE","name":"Niger","tz":"Africa/Lagos","flag":"🇳🇪"},{"code":"NG","name":"Nigeria","tz":"Africa/Lagos","flag":"🇳🇬"},{"code":"NU","name":"Niue","tz":"Pacific/Niue","flag":"🇳🇺"},{"code":"NF","name":"Norfolk Island","tz":"Pacific/Norfolk","flag":"🇳🇫"},{"code":"KP","name":"North Korea","tz":"Asia/Pyongyang","flag":"🇰🇵"},{"code":"MK","name":"North Macedonia","tz":"Europe/Belgrade","flag":"🇲🇰"},{"code":"MP","name":"Northern Mariana Islands","tz":"Pacific/Guam","flag":"🇲🇵"},{"code":"NO","name":"Norway","tz":"Europe/Oslo","flag":"🇳🇴"},{"code":"OM","name":"Oman","tz":"Asia/Muscat","flag":"🇴🇲"},{"code":"PK","name":"Pakistan","tz":"Asia/Karachi","flag":"🇵🇰"},{"code":"PW","name":"Palau","tz":"Pacific/Palau","flag":"🇵🇼"},{"code":"PS","name":"Palestine","tz":"Asia/Gaza","flag":"🇵🇸"},{"code":"PA","name":"Panama","tz":"America/Panama","flag":"🇵🇦"},{"code":"PG","name":"Papua New Guinea","tz":"Pacific/Bougainville","flag":"🇵🇬"},{"code":"PY","name":"Paraguay","tz":"America/Asuncion","flag":"🇵🇾"},{"code":"PE","name":"Peru","tz":"America/Lima","flag":"🇵🇪"},{"code":"PH","name":"Philippines","tz":"Asia/Manila","flag":"🇵🇭"},{"code":"PN","name":"Pitcairn","tz":"Pacific/Pitcairn","flag":"🇵🇳"},{"code":"PL","name":"Poland","tz":"Europe/Warsaw","flag":"🇵🇱"},{"code":"PT","name":"Portugal","tz":"Atlantic/Lisbon","flag":"🇵🇹"},{"code":"PR","name":"Puerto Rico","tz":"America/Puerto_Rico","flag":"🇵🇷"},{"code":"QA","name":"Qatar","tz":"Asia/Qatar","flag":"🇶🇦"},{"code":"CG","name":"Republic of the Congo","tz":"Africa/Lagos","flag":"🇨🇬"},{"code":"RE","name":"Réunion","tz":"Indian/Reunion","flag":"🇷🇪"},{"code":"RO","name":"Romania","tz":"Europe/Bucharest","flag":"🇷🇴"},{"code":"RU","name":"Russia","tz":"Europe/Moscow","flag":"🇷🇺"},{"code":"RW","name":"Rwanda","tz":"Africa/Maputo","flag":"🇷🇼"},{"code":"BL","name":"Saint Barthélemy","tz":"America/Puerto_Rico","flag":"🇧🇱"},{"code":"SH","name":"Saint Helena, Ascension and Tristan da Cunha","tz":"Africa/Abidjan","flag":"🇸🇭"},{"code":"KN","name":"Saint Kitts and Nevis","tz":"America/Puerto_Rico","flag":"🇰🇳"},{"code":"LC","name":"Saint Lucia","tz":"America/Puerto_Rico","flag":"🇱🇨"},{"code":"MF","name":"Saint Martin","tz":"America/Puerto_Rico","flag":"🇲🇫"},{"code":"PM","name":"Saint Pierre and Miquelon","tz":"America/Miquelon","flag":"🇵🇲"},{"code":"VC","name":"Saint Vincent and the Grenadines","tz":"America/Puerto_Rico","flag":"🇻🇨"},{"code":"WS","name":"Samoa","tz":"Pacific/Apia","flag":"🇼🇸"},{"code":"SM","name":"San Marino","tz":"Europe/Rome","flag":"🇸🇲"},{"code":"ST","name":"Sao Tome and Principe","tz":"Africa/Sao_Tome","flag":"🇸🇹"},{"code":"SA","name":"Saudi Arabia","tz":"Asia/Riyadh","flag":"🇸🇦"},{"code":"SN","name":"Senegal","tz":"Africa/Abidjan","flag":"🇸🇳"},{"code":"RS","name":"Serbia","tz":"Europe/Belgrade","flag":"🇷🇸"},{"code":"SC","name":"Seychelles","tz":"Indian/Mahe","flag":"🇸🇨"},{"code":"SL","name":"Sierra Leone","tz":"Africa/Abidjan","flag":"🇸🇱"},{"code":"SG","name":"Singapore","tz":"Asia/Singapore","flag":"🇸🇬"},{"code":"SX","name":"Sint Maarten","tz":"America/Puerto_Rico","flag":"🇸🇽"},{"code":"SK","name":"Slovakia","tz":"Europe/Prague","flag":"🇸🇰"},{"code":"SI","name":"Slovenia","tz":"Europe/Belgrade","flag":"🇸🇮"},{"code":"SB","name":"Solomon Islands","tz":"Pacific/Guadalcanal","flag":"🇸🇧"},{"code":"SO","name":"Somalia","tz":"Africa/Nairobi","flag":"🇸🇴"},{"code":"ZA","name":"South Africa","tz":"Africa/Johannesburg","flag":"🇿🇦"},{"code":"GS","name":"South Georgia and the South Sandwich Islands","tz":"Atlantic/South_Georgia","flag":"🇬🇸"},{"code":"KR","name":"South Korea","tz":"Asia/Seoul","flag":"🇰🇷"},{"code":"SS","name":"South Sudan","tz":"Africa/Juba","flag":"🇸🇸"},{"code":"ES","name":"Spain","tz":"Europe/Madrid","flag":"🇪🇸"},{"code":"LK","name":"Sri Lanka","tz":"Asia/Colombo","flag":"🇱🇰"},{"code":"SD","name":"Sudan","tz":"Africa/Khartoum","flag":"🇸🇩"},{"code":"SR","name":"Suriname","tz":"America/Paramaribo","flag":"🇸🇷"},{"code":"SJ","name":"Svalbard and Jan Mayen","tz":"Europe/Berlin","flag":"🇸🇯"},{"code":"SE","name":"Sweden","tz":"Europe/Berlin","flag":"🇸🇪"},{"code":"CH","name":"Switzerland","tz":"Europe/Zurich","flag":"🇨🇭"},{"code":"SY","name":"Syria","tz":"Asia/Damascus","flag":"🇸🇾"},{"code":"TW","name":"Taiwan","tz":"Asia/Taipei","flag":"🇹🇼"},{"code":"TJ","name":"Tajikistan","tz":"Asia/Dushanbe","flag":"🇹🇯"},{"code":"TZ","name":"Tanzania","tz":"Africa/Nairobi","flag":"🇹🇿"},{"code":"TH","name":"Thailand","tz":"Asia/Bangkok","flag":"🇹🇭"},{"code":"TL","name":"Timor-Leste","tz":"Asia/Dili","flag":"🇹🇱"},{"code":"TG","name":"Togo","tz":"Africa/Abidjan","flag":"🇹🇬"},{"code":"TK","name":"Tokelau","tz":"Pacific/Fakaofo","flag":"🇹🇰"},{"code":"TO","name":"Tonga","tz":"Pacific/Tongatapu","flag":"🇹🇴"},{"code":"TT","name":"Trinidad and Tobago","tz":"America/Puerto_Rico","flag":"🇹🇹"},{"code":"TN","name":"Tunisia","tz":"Africa/Tunis","flag":"🇹🇳"},{"code":"TR","name":"Türkiye","tz":"Europe/Istanbul","flag":"🇹🇷"},{"code":"TM","name":"Turkmenistan","tz":"Asia/Ashgabat","flag":"🇹🇲"},{"code":"TC","name":"Turks and Caicos Islands","tz":"America/Grand_Turk","flag":"🇹🇨"},{"code":"TV","name":"Tuvalu","tz":"Pacific/Tarawa","flag":"🇹🇻"},{"code":"UG","name":"Uganda","tz":"Africa/Nairobi","flag":"🇺🇬"},{"code":"UA","name":"Ukraine","tz":"Europe/Kyiv","flag":"🇺🇦"},{"code":"AE","name":"United Arab Emirates","tz":"Asia/Dubai","flag":"🇦🇪"},{"code":"GB","name":"United Kingdom","tz":"Europe/London","flag":"🇬🇧"},{"code":"UM","name":"United States Minor Outlying Islands","tz":"Pacific/Pago_Pago","flag":"🇺🇲"},{"code":"US","name":"United States of America","tz":"America/New_York","flag":"🇺🇸"},{"code":"UY","name":"Uruguay","tz":"America/Montevideo","flag":"🇺🇾"},{"code":"UZ","name":"Uzbekistan","tz":"Asia/Samarkand","flag":"🇺🇿"},{"code":"VU","name":"Vanuatu","tz":"Pacific/Efate","flag":"🇻🇺"},{"code":"VE","name":"Venezuela","tz":"America/Caracas","flag":"🇻🇪"},{"code":"VN","name":"Vietnam","tz":"Asia/Bangkok","flag":"🇻🇳"},{"code":"VG","name":"Virgin Islands (UK)","tz":"America/Puerto_Rico","flag":"🇻🇬"},{"code":"VI","name":"Virgin Islands (US)","tz":"America/Puerto_Rico","flag":"🇻🇮"},{"code":"WF","name":"Wallis and Futuna","tz":"Pacific/Tarawa","flag":"🇼🇫"},{"code":"EH","name":"Western Sahara","tz":"Africa/El_Aaiun","flag":"🇪🇭"},{"code":"YE","name":"Yemen","tz":"Asia/Riyadh","flag":"🇾🇪"},{"code":"ZM","name":"Zambia","tz":"Africa/Maputo","flag":"🇿🇲"},{"code":"ZW","name":"Zimbabwe","tz":"Africa/Maputo","flag":"🇿🇼"}];
+
+(function(){
+  const elHMS = document.getElementById('clockHMS');
+  const elSecs = document.getElementById('clockSecs');
+  const elAmPm = document.getElementById('clockAmPm');
+  const elDate = document.getElementById('liveClockDate');
+  const select = document.getElementById('clockCountrySelect');
+
+  // Populate the dropdown: "Your Local Time" first, then every country A-Z.
+  const localOpt = document.createElement('option');
+  localOpt.value = 'LOCAL';
+  localOpt.textContent = '🌍 Your Local Time';
+  select.appendChild(localOpt);
+
+  WORLD_COUNTRIES.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c.tz;
+    opt.textContent = c.flag + ' ' + c.name;
+    select.appendChild(opt);
+  });
+
+  // Try to auto-select the visitor's own country based on their browser timezone.
+  let browserTz = '';
+  try{ browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; }catch(e){}
+  const matchedCountry = WORLD_COUNTRIES.find(c => c.tz === browserTz);
+  select.value = matchedCountry ? matchedCountry.tz : 'LOCAL';
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function tick(){
+    const now = new Date();
+    const timeZone = select.value === 'LOCAL' ? undefined : select.value;
+    let hourStr, minuteStr, secondStr, ampm, dateStr;
+    try{
+      const opts = timeZone ? { timeZone } : {};
+      const timeFmt = new Intl.DateTimeFormat('en-US', Object.assign({}, opts, { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }));
+      const parts = timeFmt.formatToParts(now);
+      const get = type => (parts.find(p=>p.type===type) || {}).value || '';
+      hourStr = get('hour'); minuteStr = get('minute'); secondStr = get('second');
+      ampm = get('dayPeriod').toUpperCase();
+
+      const dateFmt = new Intl.DateTimeFormat('en-US', Object.assign({}, opts, { weekday:'short', day:'numeric', month:'short', year:'numeric' }));
+      dateStr = dateFmt.format(now);
+    }catch(e){
+      // Fallback to plain local time if an invalid/unsupported timezone slips through
+      let hours = now.getHours();
+      ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12; if(hours === 0) hours = 12;
+      hourStr = pad(hours); minuteStr = pad(now.getMinutes()); secondStr = pad(now.getSeconds());
+      dateStr = now.toDateString();
+    }
+    elHMS.textContent = hourStr + ':' + minuteStr + ':';
+    elSecs.textContent = secondStr;
+    elAmPm.textContent = ampm;
+    elDate.textContent = dateStr;
+  }
+
+  select.addEventListener('change', tick);
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+<div id="printArea"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand"><div class="brand-mark">i</div>Invoice Maker Pro</div>
+    <nav class="nav-links">
+      <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
+      <a href="#templates" data-i18n="nav_templates">Templates</a>
+      <a href="#builder" data-i18n="nav_create">Create Invoice</a>
+      <a href="#how" data-i18n="nav_how">How it Works</a>
+      <a href="#" id="findInvoiceNavLink" data-i18n="nav_findinvoice">Find Old Invoice</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language">اردو</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"></button>
+      <div id="loggedOutArea">
+        <button class="btn btn-ghost" id="loginNavBtn" data-i18n="login">Login</button>
+      </div>
+      <div id="loggedInArea" style="display:none;align-items:center;gap:10px;">
+        <div style="background:var(--primary-soft);color:var(--primary);padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:700;" id="creditsBadge">0 Invoices Left</div>
+        <button class="btn btn-ghost" id="logoutBtn" data-i18n="logout">Logout</button>
+      </div>
+      <a href="#builder" class="btn btn-primary" data-i18n="nav_create_btn">Create Invoice →</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="blob blob1"></div><div class="blob blob2"></div>
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow" data-i18n="hero_eyebrow">Har Pakistani Business Ke Liye</div>
+      <h1 data-i18n-html="hero_h1">Apna Logo Lagayen, <em>Khoobsurat Invoice</em> Banayen.</h1>
+      <p class="lead" data-i18n="hero_lead">Chahe aap freelancer hon, dukaandar hon ya IT company chalate hon — apne business ke liye professional invoice sirf 2 minute mein banayen, apna logo add karen aur seedha print ya download karen.</p>
+      <div class="hero-ctas">
+        <a href="#builder" class="btn btn-primary" data-i18n="hero_cta1">Ab Invoice Banayen →</a>
+        <a href="#templates" class="btn btn-ghost" data-i18n="hero_cta2">Templates Dekhen</a>
+      </div>
+      <div class="trust-row">
+        <div class="trust-item" data-i18n-html="trust1"><b>6+</b> Professional Templates</div>
+        <div class="trust-item" data-i18n-html="trust2"><b>Easypaisa · JazzCash</b> Support</div>
+        <div class="trust-item" data-i18n-html="trust3"><b>Har</b> Bank Se Payment</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="mock-card">
+        <div class="mock-top">
+          <div class="mock-logo"></div>
+          <div class="mock-badge" data-i18n="mock_badge">INVOICE</div>
+        </div>
+        <div class="mock-row"><span data-i18n="mock_item1">Web Design Services</span><span>Rs 45,000</span></div>
+        <div class="mock-row"><span data-i18n="mock_item2">Logo & Branding</span><span>Rs 18,000</span></div>
+        <div class="mock-row"><span data-i18n="mock_item3">Monthly Maintenance</span><span>Rs 8,000</span></div>
+        <div class="mock-total"><span data-i18n="mock_total_label">Total</span><span>Rs 71,000</span></div>
+        <div class="mock-stamp" data-i18n-html="mock_stamp">100%<br>PAID</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT: below hero -->
+<div class="ad-slot">
+  <span class="ad-label">Advertisement</span>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-YOUR_ADSENSE_CLIENT_ID"
+       data-ad-slot="YOUR_AD_SLOT_ID_1"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pricing_eyebrow">Qeemat / Pricing</div>
+      <h2 data-i18n="pricing_h2">Apni Zaroorat Ke Mutabiq Plan Chunen</h2>
+      <p data-i18n="pricing_p">Single invoice bhi bana saktay hain, ya bundle le kar per-invoice cost kam kar saktay hain.</p>
+    </div>
+    <div class="template-grid" id="pricingGrid" style="align-items:stretch;">
+      <div class="tpl-card" style="cursor:default;" data-plan="single">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;" data-i18n="plan_single_label">Single Invoice</div>
+        <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;margin:10px 0 2px;">Rs 30</div>
+        <div class="tpl-desc" style="margin-bottom:16px;" data-i18n="plan_single_desc">One-time print access — approval ke baad unlock hoga</div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="openBuyModal(1,30)" data-i18n="plan_single_btn">Print Access Kharden</button>
+      </div>
+      <div class="tpl-card selected" style="cursor:default;position:relative;" data-plan="bundle50">
+        <div style="position:absolute;top:-11px;right:16px;background:var(--accent);color:#291d05;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;" data-i18n="plan_popular">POPULAR</div>
+        <div style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.5px;" data-i18n="plan_50_label">Bundle — 50 Invoices</div>
+        <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;margin:10px 0 2px;">Rs 750</div>
+        <div class="tpl-desc" style="margin-bottom:16px;" data-i18n-html="plan_50_desc">Per invoice sirf <b>Rs 15</b> — Register karen, jab tak bundle na khatam ho print automatic unlock rahega</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="openBuyModal(50,750)" data-i18n="plan_bundle_btn">Ye Bundle Lein</button>
+      </div>
+      <div class="tpl-card" style="cursor:default;" data-plan="bundle100">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;" data-i18n="plan_100_label">Bundle — 100 Invoices</div>
+        <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;margin:10px 0 2px;">Rs 1000</div>
+        <div class="tpl-desc" style="margin-bottom:16px;" data-i18n-html="plan_100_desc">Per invoice sirf <b>Rs 10</b> — Best value bade businesses ke liye</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="openBuyModal(100,1000)" data-i18n="plan_bundle_btn">Ye Bundle Lein</button>
+      </div>
+    </div>
+
+    <div style="max-width:640px;margin:40px auto 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow);">
+      <div style="font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;text-align:center;" data-i18n="pay_here_heading">Payment Yahan Bhejen</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:10px;padding:12px 16px;">
+          <div><div style="font-size:12px;color:var(--muted);font-weight:600;">📱 Easypaisa</div><div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;">0345-9689810</div></div>
+          <div style="font-size:12px;color:var(--muted);">Raza Hussain</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:10px;padding:12px 16px;">
+          <div><div style="font-size:12px;color:var(--muted);font-weight:600;">🏦 UBL IBAN</div><div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;">PK52UNIL0109000252410828</div></div>
+          <div style="font-size:12px;color:var(--muted);">Raza Hussain</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:14px;" data-i18n-html="pay_tip">💡 In dono accounts mein se kisi ek par payment karen, phir "Print Access Kharden" ya "Bundle Lein" button se apni transaction ID submit karen.</p>
+      <div style="border-top:1px solid var(--border);margin-top:18px;padding-top:16px;text-align:center;">
+        <div style="font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;" data-i18n="contact_heading">Contact / Sawal Ho To Rabta Karen</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://wa.me/923459689810" target="_blank" class="btn btn-primary" style="padding:9px 18px;font-size:13px;">💬 WhatsApp: +92 345 9689810</a>
+          <a href="mailto:razakw77@gmail.com" class="btn btn-ghost" style="padding:9px 18px;font-size:13px;">✉️ razakw77@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATES -->
+<section class="section" id="templates">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="templates_eyebrow">Design Select Karen</div>
+      <h2 data-i18n="templates_h2">Apne Business Ke Liye Design Chunen</h2>
+      <p data-i18n="templates_p">Har template kisi bhi business type ke liye customize ho sakta hai — logo, rang, aur content sab aapka apna hoga.</p>
+    </div>
+    <div class="template-grid" id="templateGrid">
+      <div class="tpl-card selected" data-tpl="modern">
+        <div class="tpl-preview pv-modern"><div class="bar" style="top:14px;left:14px;width:40%;"></div><div class="bar" style="top:34px;left:14px;width:60%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_modern_name">Modern Emerald</div><div class="tpl-desc" data-i18n="tpl_modern_desc">Digital agencies, freelancers</div>
+        <div class="tpl-check">✓</div>
+      </div>
+      <div class="tpl-card" data-tpl="minimal">
+        <div class="tpl-preview pv-minimal"><div class="bar" style="top:14px;left:14px;width:30%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_minimal_name">Clean Minimal</div><div class="tpl-desc" data-i18n="tpl_minimal_desc">Consultants, small studios</div>
+        <div class="tpl-check">✓</div>
+      </div>
+      <div class="tpl-card" data-tpl="corporate">
+        <div class="tpl-preview pv-corporate"><div class="bar" style="top:14px;left:14px;width:44%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_corporate_name">Corporate Navy</div><div class="tpl-desc" data-i18n="tpl_corporate_desc">IT companies, agencies</div>
+        <div class="tpl-check">✓</div>
+      </div>
+      <div class="tpl-card" data-tpl="creative">
+        <div class="tpl-preview pv-creative"><div class="bar" style="top:14px;left:14px;width:38%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_creative_name">Creative Gradient</div><div class="tpl-desc" data-i18n="tpl_creative_desc">Designers, artists, salons</div>
+        <div class="tpl-check">✓</div>
+      </div>
+      <div class="tpl-card" data-tpl="classic">
+        <div class="tpl-preview pv-classic"><div class="bar" style="top:14px;left:14px;width:42%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_classic_name">Classic Trader</div><div class="tpl-desc" data-i18n="tpl_classic_desc">Traders, wholesalers, shops</div>
+        <div class="tpl-check">✓</div>
+      </div>
+      <div class="tpl-card" data-tpl="bold">
+        <div class="tpl-preview pv-bold"><div class="bar" style="top:14px;left:14px;width:36%;"></div></div>
+        <div class="tpl-name" data-i18n="tpl_bold_name">Bold Dark</div><div class="tpl-desc" data-i18n="tpl_bold_desc">Studios, premium brands</div>
+        <div class="tpl-check">✓</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT: between templates and builder -->
+<div class="ad-slot">
+  <span class="ad-label">Advertisement</span>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-YOUR_ADSENSE_CLIENT_ID"
+       data-ad-slot="YOUR_AD_SLOT_ID_2"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- BUILDER -->
+<section class="section alt-bg" id="builder">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="builder_eyebrow">Invoice Banayen</div>
+      <h2 data-i18n="builder_h2">Apni Invoice Ki Details Bharen</h2>
+      <p data-i18n="builder_p">Jaise jaise aap likhenge, dayen taraf preview khud-ba-khud update hoga.</p>
+    </div>
+
+    <div class="builder-grid">
+      <!-- LEFT: FORM -->
+      <div>
+        <div class="panel">
+          <h3><span class="num">1</span><span data-i18n="panel1_heading">Business Information &amp; Logo</span></h3>
+          <label class="logo-upload" for="logoInput">
+            <img id="logoPreviewImg" class="logo-preview" style="display:none;">
+            <div id="logoPlaceholder" style="font-size:24px;">🖼️</div>
+            <div style="text-align:left;">
+              <div style="font-weight:600;font-size:13.5px;" data-i18n="logo_upload_title">Apna Logo Upload Karen</div>
+              <div style="font-size:11.5px;color:var(--muted);" data-i18n="logo_upload_sub">PNG ya JPG — click karen</div>
+            </div>
+          </label>
+          <input type="file" id="logoInput" accept="image/*" style="display:none;">
+          <div class="field" style="margin-top:14px;">
+            <label data-i18n="label_bizname">Business Name</label>
+            <input id="bizName" placeholder="e.g. Zain Digital Solutions" value="Zain Digital Solutions">
+          </div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_phone">Phone</label><input id="bizPhone" placeholder="0300-1234567" value="0300-1234567"></div>
+            <div class="field"><label data-i18n="label_email">Email</label><input id="bizEmail" placeholder="hello@business.com" value="hello@zaindigital.com"></div>
+          </div>
+          <div class="field"><label data-i18n="label_address">Address</label><input id="bizAddress" placeholder="Shop/Office Address, City" value="Gulberg III, Lahore, Pakistan"></div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="num">2</span><span data-i18n="panel2_heading">Client Information</span></h3>
+          <div class="field"><label data-i18n="label_clientname">Client / Company Name</label><input id="clientName" data-i18n-ph="ph_clientname" placeholder="Client ka naam" value="Ahmed Traders"></div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_clientphone">Client Phone</label><input id="clientPhone" placeholder="03XX-XXXXXXX" value="0321-9876543"></div>
+            <div class="field"><label data-i18n="label_clientemail">Client Email</label><input id="clientEmail" placeholder="client@email.com" value="ahmed@traders.pk"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="num">3</span><span data-i18n="panel3_heading">Invoice Details</span></h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <div id="invModeIndicator" style="font-size:12px;font-weight:700;color:var(--muted);"></div>
+            <button type="button" class="btn btn-ghost" style="padding:6px 12px;font-size:12.5px;" id="createNewInvoiceBtn" data-i18n="create_new_invoice_btn">🆕 Create New Invoice</button>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label data-i18n="label_invnumber">Invoice Number</label>
+              <input id="invNumber" value="INV-2026-0142" readonly style="background:var(--surface-2);cursor:not-allowed;">
+              <div style="font-size:10.5px;color:var(--muted);margin-top:4px;" data-i18n="invnumber_auto_note">🔒 Auto-generated — different for every account, changes automatically after each print.</div>
+            </div>
+            <div class="field"><label data-i18n="label_currency">Currency</label>
+              <select id="currency">
+                <option value="Rs" selected>PKR (Rs)</option>
+                <option value="$">USD ($)</option>
+                <option value="AED">AED</option>
+                <option value="£">GBP (£)</option>
+                <option value="€">EUR (€)</option>
+                <option value="﷼">SAR (﷼)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_issuedate">Issue Date</label><input type="date" id="invDate"></div>
+            <div class="field"><label data-i18n="label_duedate">Due Date</label><input type="date" id="dueDate"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="num">4</span><span data-i18n="panel4_heading">Items &amp; Services</span></h3>
+          <table class="items-table">
+            <thead><tr><th style="width:36%;" data-i18n="col_desc">Description</th><th data-i18n="col_qty">Qty</th><th data-i18n="col_unit">Unit</th><th data-i18n="col_price">Price</th><th></th></tr></thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+          <datalist id="unitOptions">
+            <option value="pcs"><option value="kg"><option value="g"><option value="litre">
+            <option value="ml"><option value="dozen"><option value="box"><option value="pack">
+            <option value="strip"><option value="tablet"><option value="capsule"><option value="bottle">
+            <option value="meter"><option value="yard"><option value="carton"><option value="hour">
+            <option value="day"><option value="month"><option value="sq.ft"><option value="bag">
+          </datalist>
+          <button class="add-item-btn" id="addItemBtn" data-i18n="add_item_btn">+ Item Add Karen</button>
+
+          <div class="totals-box">
+            <div class="totals-row"><span data-i18n="col_subtotal">Subtotal</span><span id="subtotalDisp">Rs 0</span></div>
+            <div class="totals-row">
+              <span data-i18n="col_tax">Tax (%)</span>
+              <input type="number" id="taxPct" class="mini-input" value="0" min="0">
+            </div>
+            <div class="totals-row">
+              <span data-i18n="col_discount">Discount (%)</span>
+              <input type="number" id="discPct" class="mini-input" value="0" min="0">
+            </div>
+            <div class="totals-row grand"><span data-i18n="col_grandtotal">Grand Total</span><span id="grandTotalDisp">Rs 0</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="num">5</span><span data-i18n="panel5_heading">Payment Details (Client Yahan Paisay Bhejega)</span></h3>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px;" data-i18n="panel5_desc">Ye details invoice pe print hongi taake client seedha aapke account mein transfer kar sakay. Jo khali chorenge wo invoice pe nahi dikhega.</p>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <input type="checkbox" id="showBank" checked style="width:auto;">
+            <label style="margin:0;font-weight:700;color:var(--text);" data-i18n="label_banktransfer">🏦 Bank Transfer</label>
+          </div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_bankname">Bank Name</label><input id="bankName" placeholder="e.g. UBL" value="UBL (United Bank Limited)"></div>
+            <div class="field"><label data-i18n="label_accounttitle">Account Title</label><input id="bankTitle" data-i18n-ph="ph_accountholder" placeholder="Account holder ka naam" value="Zain Digital Solutions"></div>
+          </div>
+          <div class="field"><label data-i18n="label_accountnum">Account Number / IBAN</label><input id="bankAccNum" placeholder="PK00 UNIL 0000 0000 0000 0000" value=""></div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin:16px 0 8px;">
+            <input type="checkbox" id="showEasypaisa" checked style="width:auto;">
+            <label style="margin:0;font-weight:700;color:var(--text);" data-i18n="label_easypaisa">📱 Easypaisa</label>
+          </div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_easypaisanum">Easypaisa Number</label><input id="easypaisaNum" placeholder="03XX-XXXXXXX" value=""></div>
+            <div class="field"><label data-i18n="label_accounttitle">Account Title</label><input id="easypaisaTitle" data-i18n-ph="ph_naam" placeholder="Naam" value="Zain Digital Solutions"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin:16px 0 8px;">
+            <input type="checkbox" id="showJazzcash" checked style="width:auto;">
+            <label style="margin:0;font-weight:700;color:var(--text);" data-i18n="label_jazzcash">📱 JazzCash</label>
+          </div>
+          <div class="field-row">
+            <div class="field"><label data-i18n="label_jazzcashnum">JazzCash Number</label><input id="jazzcashNum" placeholder="03XX-XXXXXXX" value=""></div>
+            <div class="field"><label data-i18n="label_accounttitle">Account Title</label><input id="jazzcashTitle" data-i18n-ph="ph_naam" placeholder="Naam" value="Zain Digital Solutions"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="num">6</span><span data-i18n="panel6_heading">Notes / Terms</span></h3>
+          <textarea id="invNotes" rows="3" data-i18n-ph="ph_notes" placeholder="e.g. Payment 7 din ke andar karen. Shukriya!">Payment 7 din ke andar karen. Deir se payment par 2% charge lagu hoga. Shukriya for your business!</textarea>
+        </div>
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+      <div class="preview-sticky">
+        <div class="preview-wrap">
+          <div class="preview-toolbar">
+            <span data-i18n="live_preview">LIVE PREVIEW</span>
+            <span id="tplLabel">Modern Emerald</span>
+          </div>
+          <div id="invoicePreview" class="tpl-modern">
+            <div class="paid-stamp" id="paidStamp" data-i18n="paid_stamp">PAID</div>
+            <div class="inv-head">
+              <div class="inv-logo-box">
+                <img id="pvLogo" style="display:none;">
+                <div class="inv-biz-name" id="pvBizName">Zain Digital Solutions</div>
+                <div class="inv-biz-meta" id="pvBizMeta"></div>
+              </div>
+              <div class="inv-title-block">
+                <div class="inv-title" data-i18n="invoice_doc_title">INVOICE</div>
+                <div class="inv-meta-line" id="pvInvNumber"></div>
+                <div class="inv-meta-line" id="pvInvDates"></div>
+              </div>
+            </div>
+            <div class="inv-parties">
+              <div><div class="lbl" data-i18n="bill_to">Bill To</div><div class="name" id="pvClientName">Ahmed Traders</div><div class="inv-biz-meta" id="pvClientMeta"></div></div>
+            </div>
+            <table class="inv-table">
+              <thead><tr><th data-i18n="col_desc">Description</th><th data-i18n="col_qty">Qty</th><th data-i18n="col_unit">Unit</th><th data-i18n="col_price">Price</th><th data-i18n="col_total">Total</th></tr></thead>
+              <tbody id="pvItemsBody"></tbody>
+            </table>
+            <div class="inv-totals">
+              <div class="row"><span data-i18n="col_subtotal">Subtotal</span><span id="pvSubtotal">Rs 0</span></div>
+              <div class="row" id="pvTaxRow"><span data-i18n="col_tax_short">Tax</span><span id="pvTax">Rs 0</span></div>
+              <div class="row" id="pvDiscRow"><span data-i18n="col_discount_short">Discount</span><span id="pvDisc">Rs 0</span></div>
+              <div class="row grand"><span data-i18n="col_total">Total</span><span id="pvGrandTotal">Rs 0</span></div>
+            </div>
+            <div id="pvPaymentBox" style="margin-top:22px;background:#F6F8F7;border:1px solid #e5e5e5;border-radius:10px;padding:14px 16px;">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;font-weight:700;margin-bottom:10px;" data-i18n="pv_payment_heading">Payment Details — Yahan Transfer Karen</div>
+              <div id="pvPaymentRows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+            <div class="inv-footer-note" id="pvNotes"></div>
+          </div>
+        </div>
+        <div id="invoiceLoadedBanner" style="display:none;background:var(--primary-soft);color:var(--primary);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:13px;font-weight:700;text-align:center;"></div>
+        <div id="bundleActiveBanner" style="display:none;background:var(--primary-soft);color:var(--primary);border-radius:10px;padding:12px 14px;margin-top:16px;font-size:13px;font-weight:700;text-align:center;">
+          <span data-i18n="bundle_banner_pre">✓ Access Active — </span><span id="bundleCountText">0</span><span data-i18n="bundle_banner_post"> invoices left. Print seedha unlock hai!</span>
+        </div>
+        <div id="pendingApprovalBanner" style="display:none;background:#FFF3D6;color:#8A6100;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:13px;font-weight:700;text-align:center;">
+          <span data-i18n="pending_banner">⏳ Aapki payment owner ke pass verify ho rahi hai. Approve hote hi print unlock ho jayega.</span>
+          <button class="btn btn-ghost" id="refreshStatusBtn" style="display:block;margin:8px auto 0;font-size:11.5px;padding:6px 12px;" data-i18n="refresh_status">Status Refresh Karen</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;" id="payCtaRow">
+          <button class="btn btn-gold" style="flex:1;justify-content:center;" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})" data-i18n="buy_print_access">🔒 Print Access Kharden (Owner Approval Zaroori Hai)</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <button class="btn btn-primary" style="flex:1;justify-content:center;" id="printBtn" disabled data-i18n="print_btn">🖨️ Print / Save as PDF</button>
+        </div>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;" id="printHintText">Print button sirf owner ki approval ke baad unlock hota hai — koi bhi user khud unlock nahi kar sakta.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center;"><span data-i18n="stamp_note">Sirf apne record ke liye:</span> <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" id="openPayBtn" data-i18n="stamp_btn">client ne mujhe pay kar diya (stamp)</button></p>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center;"><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" id="saveForLookupBtn" data-i18n="save_for_lookup_btn">💾 Save invoice (for later lookup by number)</button></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="how_eyebrow">Aasan Process</div>
+      <h2 data-i18n="how_h2">Sirf 4 Steps Mein Invoice Tayyar</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><h4 data-i18n="step1_title">Template Chunen</h4><p data-i18n="step1_desc">6 professional designs mein se apne business ke liye best design select karen.</p></div>
+      <div class="step"><div class="step-num">02</div><h4 data-i18n="step2_title">Details Bharen</h4><p data-i18n="step2_desc">Apna logo, business info aur items add karen — preview live update hota hai.</p></div>
+      <div class="step"><div class="step-num">03</div><h4 data-i18n="step3_title">Payment Karen</h4><p data-i18n="step3_desc">Kisi bhi Pakistani bank, Easypaisa, JazzCash ya international card se payment karen.</p></div>
+      <div class="step"><div class="step-num">04</div><h4 data-i18n="step4_title">Print / Download</h4><p data-i18n="step4_desc">Apni professional invoice print karen ya PDF ki tarah save karen.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT: above footer -->
+<div class="ad-slot">
+  <span class="ad-label">Advertisement</span>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-YOUR_ADSENSE_CLIENT_ID"
+       data-ad-slot="YOUR_AD_SLOT_ID_3"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="brand"><div class="brand-mark">i</div>Invoice Maker Pro</div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted);">
+      <span><span data-i18n="footer_contact">Contact:</span> <b style="color:var(--text);">Raza Hussain</b></span>
+      <a href="https://wa.me/923459689810" target="_blank" style="color:var(--primary);font-weight:600;">💬 WhatsApp</a>
+      <a href="mailto:razakw77@gmail.com" style="color:var(--primary);font-weight:600;">✉️ razakw77@gmail.com</a>
+    </div>
+    <p data-i18n="footer_copyright">© 2026 Invoice Maker Pro. Har Pakistani business ke liye banaya gaya. 🇵🇰</p>
+    <button class="btn btn-ghost" id="adminOpenBtn" style="font-size:12px;padding:8px 14px;" data-i18n="admin_btn">⚙ Admin</button>
+  </div>
+</footer>
+
+<!-- PAYMENT CONFIRMATION MODAL -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="paymodal_title">Payment Receive Confirm Karen</h3>
+      <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="payStageSelect">
+        <div class="pay-summary">
+          <div>
+            <div style="font-size:12px;color:var(--muted);" data-i18n="invoice_amount">Invoice Amount</div>
+            <div class="amt" id="modalAmount">Rs 0</div>
+          </div>
+          <div style="font-size:34px;">💰</div>
+        </div>
+
+        <p style="font-size:13.5px;line-height:1.7;color:var(--text);margin-bottom:16px;" data-i18n-html="paymodal_body">
+          Aapke invoice pe aapke <b>Bank/Easypaisa/JazzCash</b> ki details already print hain, is liye client seedha wahan transfer karega. Jab paisay aapke account mein aa jayen, neeche confirm karen taake invoice pe "PAID" stamp lag jaye aur print unlock ho.
+        </p>
+
+        <div class="field">
+          <label data-i18n="received_via">Payment kis zariye se aayi?</label>
+          <select id="receivedVia">
+            <option data-i18n="opt_banktransfer">Bank Transfer</option>
+            <option data-i18n="opt_easypaisa">Easypaisa</option>
+            <option data-i18n="opt_jazzcash">JazzCash</option>
+            <option data-i18n="opt_cash">Cash</option>
+            <option data-i18n="opt_other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="txn_ref_optional">Transaction ID / Reference (optional)</label>
+          <input id="txnRef" placeholder="e.g. TRX123456789">
+        </div>
+
+        <div class="pay-note" data-i18n="paymodal_tip">💡 Tip: Client se payment ka screenshot WhatsApp par mangwa len taake confirm ho sakay ke paisay waqai mil gaye hain, phir yahan mark karen.</div>
+
+        <button class="btn btn-primary" id="payNowBtn" style="width:100%;justify-content:center;margin-top:18px;" data-i18n="pay_received_btn">✓ Haan, Payment Mil Gayi Hai</button>
+      </div>
+
+      <div class="pay-processing" id="payProcessing">
+        <div class="spinner"></div>
+        <p style="font-weight:600;" data-i18n="confirming_text">Confirm ho raha hai...</p>
+      </div>
+
+      <div class="pay-success" id="paySuccess">
+        <div class="success-check">✓</div>
+        <h3 style="margin-bottom:8px;" data-i18n="paymodal_success_title">Invoice Paid Mark Ho Gayi!</h3>
+        <p style="color:var(--muted);font-size:13.5px;margin-bottom:20px;" data-i18n="paymodal_success_desc">Ab aap apni invoice print ya PDF ki tarah save kar saktay hain.</p>
+        <button class="btn btn-primary" id="continueBtn" style="width:100%;justify-content:center;" data-i18n="continue_btn">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL (Register / Login) -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <h3 id="authModalTitle" data-i18n="auth_title_register">Account Banayen</h3>
+      <button class="modal-close" id="closeAuthBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pay-tabs">
+        <button class="pay-tab active" data-authtab="register" data-i18n="tab_newaccount">Naya Account</button>
+        <button class="pay-tab" data-authtab="login" data-i18n="login">Login</button>
+      </div>
+
+      <div id="registerForm">
+        <div class="field"><label data-i18n="label_username">Username</label><input id="regUsername" placeholder="e.g. zaindigital"></div>
+        <div class="field"><label data-i18n="label_password">Password</label><input id="regPassword" type="password" data-i18n-ph="ph_createpassword" placeholder="Password banayen"></div>
+        <p id="regError" style="color:var(--danger);font-size:12.5px;display:none;margin-bottom:8px;"></p>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" id="registerBtn" data-i18n="create_account_btn">Account Banayen</button>
+      </div>
+
+      <div id="loginForm" style="display:none;">
+        <div class="field"><label data-i18n="label_username">Username</label><input id="loginUsername" placeholder="Username"></div>
+        <div class="field"><label data-i18n="label_password">Password</label><input id="loginPassword" type="password" placeholder="Password"></div>
+        <p id="loginError" style="color:var(--danger);font-size:12.5px;display:none;margin-bottom:8px;"></p>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" id="loginBtn" data-i18n="login_btn">Login Karen</button>
+      </div>
+
+      <div class="pay-note" style="margin-top:16px;" data-i18n="auth_note">🔒 Ye account is browser mein save hota hai (koi live server/database nahi). Real production ke liye backend + database chahiye hoga taake account har device pe kaam kare.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FIND INVOICE MODAL (lookup a previously issued invoice by its invoice number) -->
+<div class="modal-overlay" id="findInvoiceModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <h3 data-i18n="findinv_title">Purani Invoice Talash Karen</h3>
+      <button class="modal-close" id="closeFindInvoiceBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;" data-i18n="findinv_desc">Agar client kahay ke unki invoice mein koi masla hai, to invoice number yahan likhen — chahe wo invoice kitne din, mahine ya saal pehle bani ho, wo dobara khul jayegi.</p>
+      <div class="field"><label data-i18n="findinv_label">Invoice Number</label><input id="findInvoiceInput" data-i18n-ph="findinv_placeholder" placeholder="e.g. INV-2026-0142"></div>
+      <p id="findInvoiceMsg" style="font-size:12.5px;display:none;margin-bottom:8px;"></p>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="findInvoiceBtn" data-i18n="findinv_btn">🔎 Invoice Dhoondein</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUNDLE PURCHASE MODAL -->
+<div class="modal-overlay" id="buyModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-head">
+      <h3 data-i18n="buymodal_title">Bundle Purchase Request</h3>
+      <button class="modal-close" id="closeBuyBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pay-summary">
+        <div>
+          <div style="font-size:12px;color:var(--muted);" data-i18n="bundle_label">Bundle</div>
+          <div class="amt" id="buyBundleLabel">50 Invoices</div>
+        </div>
+        <div class="amt" id="buyBundlePrice" style="color:var(--accent-dark);">Rs 750</div>
+      </div>
+      <div id="buyStageSelect">
+        <p style="font-size:13.5px;color:var(--text);margin-bottom:14px;line-height:1.7;" data-i18n-html="buymodal_body">Neeche diye gaye kisi bhi ek account mein payment bhej kar transaction ID neeche bharen. <b>Owner (Raza Hussain) verify karne ke baad</b> aapke account mein invoices add kar dega.</p>
+
+        <div style="background:var(--surface-2);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;"><span style="color:var(--muted);">📱 Easypaisa</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;">0345-9689810</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-top:1px dashed var(--border);margin-top:5px;padding-top:9px;"><span style="color:var(--muted);">🏦 UBL IBAN</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;">PK52UNIL0109000252410828</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right;"><span data-i18n="account_title_colon">Account Title:</span> Raza Hussain</div>
+        </div>
+
+        <div class="field">
+          <label data-i18n="buy_method_label">Payment kis zariye se bheji?</label>
+          <select id="buyMethod">
+            <option data-i18n="opt_banktransfer_ubl">Bank Transfer (UBL)</option>
+            <option data-i18n="opt_easypaisa">Easypaisa</option>
+            <option data-i18n="opt_jazzcash">JazzCash</option>
+            <option data-i18n="opt_other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label data-i18n="txn_ref">Transaction ID / Reference</label><input id="buyTxnRef" placeholder="e.g. TRX123456789"></div>
+        <div class="pay-note" data-i18n-html="buymodal_tip">💡 Payment ka screenshot <a href="https://wa.me/923459689810" target="_blank" style="color:var(--primary);font-weight:700;">WhatsApp (+92 345 9689810)</a> par bhej den taake jaldi verify ho jaye.</div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;" id="confirmBuyBtn" data-i18n="send_request_btn">Payment Request Bhejen</button>
+      </div>
+      <div class="pay-success" id="buySuccess">
+        <div style="font-size:44px;text-align:center;margin-bottom:6px;">⏳</div>
+        <h3 style="margin-bottom:8px;text-align:center;" data-i18n="buymodal_success_title">Request Bhej Di Gayi!</h3>
+        <p style="color:var(--muted);font-size:13.5px;margin-bottom:20px;text-align:center;" data-i18n="buymodal_success_desc">Owner aapki payment verify karega, uske baad aapka bundle activate ho jayega aur print unlock hoga.</p>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" id="buyContinueBtn" data-i18n="ok_btn">Theek Hai</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-head">
+      <h3 data-i18n="adminlogin_title">Admin Login</h3>
+      <button class="modal-close" id="closeAdminLoginBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label data-i18n="admin_password_label">Admin Password</label><input id="adminPassInput" type="password" placeholder="Password"></div>
+      <p id="adminLoginError" style="color:var(--danger);font-size:12.5px;display:none;margin-bottom:8px;"></p>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="adminLoginBtn" data-i18n="login">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL MODAL -->
+<div class="modal-overlay" id="adminPanelModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-head">
+      <h3 data-i18n="adminpanel_title">Admin Panel — Payment Requests</h3>
+      <button class="modal-close" id="closeAdminPanelBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:14px;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;" data-i18n="pending_requests_heading">Pending Requests</div>
+      <div id="pendingRequestsList"></div>
+      <div style="margin:22px 0 14px;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;" data-i18n="past_requests_heading">Purani Requests</div>
+      <div id="pastRequestsList"></div>
+
+      <div style="margin:22px 0 14px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;" data-i18n="registered_users_heading">Registered Users</span>
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px;color:var(--danger);" id="clearAllDataBtn" data-i18n="clear_all_data_btn">🗑 Sab Data Clear Karen</button>
+      </div>
+      <div id="userAccountsList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ADMIN_PASSWORD: is password ko change kar lein — sirf website ka owner ye jane
+const ADMIN_PASSWORD = "shahkar8";
+</script>
+
+<!-- ================= FIREBASE SETUP =================
+  1. https://console.firebase.google.com pe jayen -> "Add project" -> naam den -> create
+  2. Project ke andar "Build" -> "Firestore Database" -> "Create database" -> "Start in test mode" -> Enable
+  3. Project Settings (gear icon) -> scroll down "Your apps" -> "</>" (Web) icon -> app register karen
+  4. Jo firebaseConfig object milega, usay neeche paste kar den (apiKey, authDomain, waghera)
+====================================================== -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD9gYS58AIT5Oe2KSJoKL6Rxkk4Y7c4m4w",
+  authDomain: "invoicemakerpro-7c70e.firebaseapp.com",
+  projectId: "invoicemakerpro-7c70e",
+  storageBucket: "invoicemakerpro-7c70e.firebasestorage.app",
+  messagingSenderId: "439134501588",
+  appId: "1:439134501588:web:0bcd17cc4522cd62035941",
+  measurementId: "G-9NGFJQH8PQ"
+};
+// ---------- LOCAL FALLBACK (used only if the Firebase CDN scripts above can't load —
+// e.g. a sandboxed preview with no network access. On a real hosted website with
+// internet access, real Firebase loads normally and this fallback is never used.
+// The fallback keeps data in this browser tab only — it will NOT sync across devices.) ----------
+function createLocalFallbackDb(){
+  const store = { imp_users:{}, imp_requests:{}, imp_invoices:{} };
+  const listeners = { imp_users:[], imp_requests:[], imp_invoices:[] };
+  function snapshotOf(coll){
+    const ids = Object.keys(store[coll]);
+    const docs = ids.map(id => ({
+      id,
+      data: () => store[coll][id],
+      ref: { delete: () => { delete store[coll][id]; notify(coll); return Promise.resolve(); } }
+    }));
+    return { docs, forEach(cb){ docs.forEach(cb); } };
+  }
+  function notify(coll){
+    const snap = snapshotOf(coll);
+    listeners[coll].forEach(cb => cb(snap));
+  }
+  return {
+    collection(coll){
+      return {
+        doc(id){
+          return {
+            set(data, opts){
+              store[coll][id] = (opts && opts.merge && store[coll][id]) ? Object.assign({}, store[coll][id], data) : data;
+              notify(coll);
+              return Promise.resolve();
+            },
+            update(data){
+              store[coll][id] = Object.assign({}, store[coll][id] || {}, data);
+              notify(coll);
+              return Promise.resolve();
+            },
+            delete(){
+              delete store[coll][id];
+              notify(coll);
+              return Promise.resolve();
+            },
+            get(){
+              const data = store[coll][id];
+              return Promise.resolve({ exists: !!data, id, data: () => data });
+            }
+          };
+        },
+        onSnapshot(cb){
+          listeners[coll].push(cb);
+          notify(coll);
+          return () => { listeners[coll] = listeners[coll].filter(x => x !== cb); };
+        },
+        get(){
+          return Promise.resolve(snapshotOf(coll));
+        }
+      };
+    }
+  };
+}
+
+let db;
+let usingLocalFallback = false;
+try{
+  if(typeof firebase === 'undefined') throw new Error('Firebase SDK did not load');
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+}catch(e){
+  console.info('ℹ️ Firebase not reachable (likely no internet in this preview) — using temporary local-only storage instead. This is expected offline and is not an error. On a live, internet-connected domain, Firebase will load normally.', e.message);
+  db = createLocalFallbackDb();
+  usingLocalFallback = true;
+}
+</script>
+
+<script>
+// ================= LANGUAGE / I18N ENGINE =================
+const I18N = {
+en: {
+  nav_pricing:"Pricing", nav_templates:"Templates", nav_create:"Create Invoice", nav_how:"How it Works",
+  login:"Login", logout:"Logout", nav_create_btn:"Create Invoice →", credits_suffix:"Invoices Left",
+  hero_eyebrow:"For Every Pakistani Business",
+  hero_h1:'Add Your Logo, Create a <em>Beautiful Invoice</em>.',
+  hero_lead:"Whether you're a freelancer, a shopkeeper, or run an IT company — create a professional invoice for your business in just 2 minutes, add your logo, and print or download it instantly.",
+  hero_cta1:"Create Invoice Now →", hero_cta2:"View Templates",
+  trust1:'<b>6+</b> Professional Templates', trust2:'<b>Easypaisa · JazzCash</b> Support', trust3:'Payments from <b>Every</b> Bank',
+  mock_badge:"INVOICE", mock_item1:"Web Design Services", mock_item2:"Logo & Branding", mock_item3:"Monthly Maintenance",
+  mock_total_label:"Total", mock_stamp:"100%<br>PAID",
+  pricing_eyebrow:"Pricing", pricing_h2:"Choose a Plan That Fits Your Needs",
+  pricing_p:"Create a single invoice, or get a bundle to lower your per-invoice cost.",
+  plan_single_label:"Single Invoice", plan_single_desc:"One-time print access — unlocks after approval", plan_single_btn:"Buy Print Access",
+  plan_popular:"POPULAR", plan_50_label:"Bundle — 50 Invoices",
+  plan_50_desc:'Only <b>Rs 15</b> per invoice — Register, and print stays unlocked until the bundle runs out',
+  plan_100_label:"Bundle — 100 Invoices", plan_100_desc:'Only <b>Rs 10</b> per invoice — Best value for larger businesses',
+  plan_bundle_btn:"Get This Bundle",
+  pay_here_heading:"Send Payment Here",
+  pay_tip:'💡 Send payment to either of these two accounts, then submit your transaction ID using the "Buy Print Access" or "Get Bundle" button.',
+  contact_heading:"Contact / Questions",
+  templates_eyebrow:"Select a Design", templates_h2:"Choose a Design For Your Business",
+  templates_p:"Every template can be customized for any business type — the logo, colors, and content will all be your own.",
+  tpl_modern_name:"Modern Emerald", tpl_modern_desc:"Digital agencies, freelancers",
+  tpl_minimal_name:"Clean Minimal", tpl_minimal_desc:"Consultants, small studios",
+  tpl_corporate_name:"Corporate Navy", tpl_corporate_desc:"IT companies, agencies",
+  tpl_creative_name:"Creative Gradient", tpl_creative_desc:"Designers, artists, salons",
+  tpl_classic_name:"Classic Trader", tpl_classic_desc:"Traders, wholesalers, shops",
+  tpl_bold_name:"Bold Dark", tpl_bold_desc:"Studios, premium brands",
+  builder_eyebrow:"Create Invoice", builder_h2:"Fill In Your Invoice Details",
+  builder_p:"As you type, the preview on the right updates automatically.",
+  panel1_heading:"Business Information & Logo", logo_upload_title:"Upload Your Logo", logo_upload_sub:"PNG or JPG — click to select",
+  label_bizname:"Business Name", label_phone:"Phone", label_email:"Email", label_address:"Address",
+  panel2_heading:"Client Information", label_clientname:"Client / Company Name", ph_clientname:"Client's name",
+  label_clientphone:"Client Phone", label_clientemail:"Client Email",
+  panel3_heading:"Invoice Details", label_invnumber:"Invoice Number", label_currency:"Currency",
+  label_issuedate:"Issue Date", label_duedate:"Due Date",
+  panel4_heading:"Items & Services", col_desc:"Description", col_qty:"Qty", col_unit:"Unit", col_price:"Price", col_total:"Total",
+  add_item_btn:"+ Add Item", col_subtotal:"Subtotal", col_tax:"Tax (%)", col_discount:"Discount (%)", col_grandtotal:"Grand Total",
+  col_tax_short:"Tax", col_discount_short:"Discount",
+  panel5_heading:"Payment Details (Client Sends Money Here)",
+  panel5_desc:"These details will be printed on the invoice so the client can transfer directly to your account. Anything left blank won't appear on the invoice.",
+  label_banktransfer:"🏦 Bank Transfer", label_bankname:"Bank Name", label_accounttitle:"Account Title", ph_accountholder:"Account holder's name",
+  label_accountnum:"Account Number / IBAN", label_easypaisa:"📱 Easypaisa", label_easypaisanum:"Easypaisa Number", ph_naam:"Name",
+  label_jazzcash:"📱 JazzCash", label_jazzcashnum:"JazzCash Number",
+  panel6_heading:"Notes / Terms", ph_notes:"e.g. Please pay within 7 days. Thank you!",
+  live_preview:"LIVE PREVIEW", paid_stamp:"PAID", invoice_doc_title:"INVOICE", bill_to:"Bill To",
+  pv_payment_heading:"Payment Details — Transfer Here",
+  bundle_banner_pre:"✓ Access Active — ", bundle_banner_post:" invoices left. Print unlocks instantly!",
+  pending_banner:"⏳ Your payment is being verified by the owner. Print unlocks as soon as it's approved.",
+  refresh_status:"Refresh Status",
+  buy_print_access:"🔒 Buy Print Access (Owner Approval Required)",
+  print_btn:"🖨️ Print / Save as PDF",
+  hint_approved:"Owner has approved — print is unlocked. Each print uses 1 invoice credit.",
+  hint_pending:"Waiting for owner's approval.",
+  hint_default:"The print button only unlocks after owner approval — no user can unlock it themselves.",
+  stamp_note:"For your own record only:", stamp_btn:"client has paid me (stamp)",
+  stamp_btn_done:"✓ Client Payment Noted",
+  how_eyebrow:"Easy Process", how_h2:"Invoice Ready in Just 4 Steps",
+  step1_title:"Choose a Template", step1_desc:"Select the best design for your business from 6 professional designs.",
+  step2_title:"Fill In Details", step2_desc:"Add your logo, business info, and items — the preview updates live.",
+  step3_title:"Make Payment", step3_desc:"Pay via any Pakistani bank, Easypaisa, JazzCash, or an international card.",
+  step4_title:"Print / Download", step4_desc:"Print your professional invoice or save it as a PDF.",
+  footer_contact:"Contact:", footer_copyright:"© 2026 Invoice Maker Pro. Made for every Pakistani business. 🇵🇰", admin_btn:"⚙ Admin",
+  paymodal_title:"Confirm Payment Received", invoice_amount:"Invoice Amount",
+  paymodal_body:'Your <b>Bank/Easypaisa/JazzCash</b> details are already printed on your invoice, so the client will transfer directly there. Once the money reaches your account, confirm below so the "PAID" stamp appears on the invoice and print unlocks.',
+  received_via:"How was the payment received?", opt_banktransfer:"Bank Transfer", opt_easypaisa:"Easypaisa", opt_jazzcash:"JazzCash", opt_cash:"Cash", opt_other:"Other",
+  txn_ref_optional:"Transaction ID / Reference (optional)",
+  paymodal_tip:"💡 Tip: Ask the client to send a payment screenshot on WhatsApp to confirm the money has really arrived, then mark it here.",
+  pay_received_btn:"✓ Yes, Payment Received", confirming_text:"Confirming...",
+  paymodal_success_title:"Invoice Marked as Paid!", paymodal_success_desc:"You can now print your invoice or save it as a PDF.", continue_btn:"Continue",
+  auth_title_register:"Create Account", auth_title_login:"Login to Account",
+  tab_newaccount:"New Account", label_username:"Username", label_password:"Password", ph_createpassword:"Create a password",
+  create_account_btn:"Create Account", login_btn:"Login",
+  auth_note:"🔒 This account is saved in this browser (no live server/database). Real production would need a backend + database so the account works on every device.",
+  err_fill_both:"Please fill in both username and password.", err_user_exists:"This username already exists. Please login.",
+  err_server:"Server error, please try again.", err_login_wrong:"Incorrect username or password.",
+  buymodal_title:"Bundle Purchase Request", bundle_label:"Bundle",
+  buymodal_body:'Send payment to any of the accounts below, then enter your transaction ID. <b>Once the owner (Raza Hussain) verifies it</b>, the invoices will be added to your account.',
+  account_title_colon:"Account Title:", buy_method_label:"How did you send the payment?",
+  opt_banktransfer_ubl:"Bank Transfer (UBL)", txn_ref:"Transaction ID / Reference",
+  buymodal_tip:'💡 Send a payment screenshot on <a href="https://wa.me/923459689810" target="_blank" style="color:var(--primary);font-weight:700;">WhatsApp (+92 345 9689810)</a> for faster verification.',
+  send_request_btn:"Send Payment Request",
+  buymodal_success_title:"Request Sent!", buymodal_success_desc:"The owner will verify your payment, after which your bundle will be activated and print will unlock.", ok_btn:"OK",
+  err_send_request:"There was a problem sending the request, please try again.",
+  adminlogin_title:"Admin Login", admin_password_label:"Admin Password", err_admin_wrong:"Incorrect password.",
+  adminpanel_title:"Admin Panel — Payment Requests", pending_requests_heading:"Pending Requests",
+  past_requests_heading:"Past Requests", registered_users_heading:"Registered Users", clear_all_data_btn:"🗑 Clear All Data",
+  no_pending:"No pending requests.", no_past:"No past requests yet.", no_users:"No registered users yet.",
+  approve_btn:"✓ Approve", reject_btn:"✕ Reject", approved_status:"✓ Approved", rejected_status:"✕ Rejected",
+  via_text:"Via", ref_text:"Ref", invoices_word:"invoices", invoices_left_admin:"invoices left", delete_btn:"🗑 Delete",
+  confirm_delete_user:'Delete "{u}"\'s account and all their history? This cannot be undone.',
+  confirm_clear_all:"All users, requests, and login sessions will be permanently deleted. Confirm?",
+  tpl_label_names:{modern:'Modern Emerald', minimal:'Clean Minimal', corporate:'Corporate Navy', creative:'Creative Gradient', classic:'Classic Trader', bold:'Bold Dark'},
+  fallback_notice:"⚠ Offline preview mode — data is temporary and won't sync across devices.",
+  nav_findinvoice:"Find Old Invoice", findinv_title:"Find a Previous Invoice",
+  findinv_desc:"If a client says something is wrong with their invoice, enter the invoice number below to pull it back up — even if it was created days, months, or years ago.",
+  findinv_label:"Invoice Number", findinv_placeholder:"e.g. INV-2026-0142", findinv_btn:"🔎 Find Invoice",
+  findinv_searching:"Searching…", findinv_notfound:"No invoice found with this number. Please double-check it and try again.",
+  findinv_enter_number:"Please enter an invoice number.",
+  findinv_loaded:"✓ Loaded Invoice #{n} — originally saved on {d}. It's now shown in the preview below.",
+  save_confirmation:"✓ Invoice #{n} saved — you can look it up any time from \"Find Old Invoice\".",
+  save_for_lookup_btn:"💾 Save invoice (for later lookup by number)",
+  invnumber_auto_note:"🔒 Auto-generated — different for every account, changes automatically after each print.",
+  create_new_invoice_btn:"🆕 Create New Invoice",
+  invmode_new:"🆕 New invoice — number will be assigned automatically.",
+  invmode_editing:"✏️ Editing saved invoice #{n} — printing will update this same invoice."
+},
+ur: {
+  nav_pricing:"قیمتیں", nav_templates:"ٹیمپلیٹس", nav_create:"انوائس بنائیں", nav_how:"طریقہ کار",
+  login:"لاگ ان", logout:"لاگ آؤٹ", nav_create_btn:"انوائس بنائیں ←", credits_suffix:"انوائسز باقی",
+  hero_eyebrow:"ہر پاکستانی بزنس کے لیے",
+  hero_h1:'اپنا لوگو لگائیں، <em>خوبصورت انوائس</em> بنائیں۔',
+  hero_lead:"چاہے آپ فری لانسر ہوں، دکاندار ہوں یا آئی ٹی کمپنی چلاتے ہوں — اپنے بزنس کے لیے صرف 2 منٹ میں پیشہ ورانہ انوائس بنائیں، اپنا لوگو شامل کریں اور فوراً پرنٹ یا ڈاؤن لوڈ کریں۔",
+  hero_cta1:"ابھی انوائس بنائیں ←", hero_cta2:"ٹیمپلیٹس دیکھیں",
+  trust1:'<b>+6</b> پیشہ ورانہ ٹیمپلیٹس', trust2:'<b>ایزی پیسہ · جاز کیش</b> سپورٹ', trust3:'<b>ہر</b> بینک سے ادائیگی',
+  mock_badge:"انوائس", mock_item1:"ویب ڈیزائن سروسز", mock_item2:"لوگو اور برانڈنگ", mock_item3:"ماہانہ دیکھ بھال",
+  mock_total_label:"ٹوٹل", mock_stamp:"100%<br>ادا شدہ",
+  pricing_eyebrow:"قیمتیں", pricing_h2:"اپنی ضرورت کے مطابق پلان چنیں",
+  pricing_p:"ایک انوائس بھی بنا سکتے ہیں، یا بنڈل لے کر فی انوائس لاگت کم کریں۔",
+  plan_single_label:"سنگل انوائس", plan_single_desc:"ایک بار پرنٹ رسائی — منظوری کے بعد اَنلاک ہوگی", plan_single_btn:"پرنٹ رسائی خریدیں",
+  plan_popular:"مقبول ترین", plan_50_label:"بنڈل — 50 انوائسز",
+  plan_50_desc:'<b>صرف 15 روپے</b> فی انوائس — رجسٹر کریں، بنڈل ختم ہونے تک پرنٹ اَنلاک رہے گا',
+  plan_100_label:"بنڈل — 100 انوائسز", plan_100_desc:'<b>صرف 10 روپے</b> فی انوائس — بڑے بزنس کے لیے بہترین قیمت',
+  plan_bundle_btn:"یہ بنڈل لیں",
+  pay_here_heading:"ادائیگی یہاں بھیجیں",
+  pay_tip:'💡 ان دونوں اکاؤنٹس میں سے کسی ایک پر ادائیگی کریں، پھر "پرنٹ رسائی خریدیں" یا "بنڈل لیں" بٹن سے اپنی ٹرانزیکشن آئی ڈی جمع کروائیں۔',
+  contact_heading:"رابطہ / سوالات",
+  templates_eyebrow:"ڈیزائن منتخب کریں", templates_h2:"اپنے بزنس کے لیے ڈیزائن چنیں",
+  templates_p:"ہر ٹیمپلیٹ کسی بھی قسم کے بزنس کے لیے کسٹمائز کیا جا سکتا ہے — لوگو، رنگ اور مواد سب آپ کا اپنا ہوگا۔",
+  tpl_modern_name:"ماڈرن ایمرلڈ", tpl_modern_desc:"ڈیجیٹل ایجنسیز، فری لانسرز",
+  tpl_minimal_name:"کلین منیمل", tpl_minimal_desc:"کنسلٹنٹس، چھوٹے سٹوڈیوز",
+  tpl_corporate_name:"کارپوریٹ نیوی", tpl_corporate_desc:"آئی ٹی کمپنیاں، ایجنسیز",
+  tpl_creative_name:"کریئٹو گریڈینٹ", tpl_creative_desc:"ڈیزائنرز، آرٹسٹس، سیلونز",
+  tpl_classic_name:"کلاسک ٹریڈر", tpl_classic_desc:"تاجر، ہول سیلرز، دکانیں",
+  tpl_bold_name:"بولڈ ڈارک", tpl_bold_desc:"سٹوڈیوز، پریمیم برانڈز",
+  builder_eyebrow:"انوائس بنائیں", builder_h2:"اپنی انوائس کی تفصیلات درج کریں",
+  builder_p:"جیسے جیسے آپ لکھیں گے، دائیں طرف پیش منظر خود بخود اپڈیٹ ہوگا۔",
+  panel1_heading:"بزنس کی معلومات اور لوگو", logo_upload_title:"اپنا لوگو اپلوڈ کریں", logo_upload_sub:"PNG یا JPG — منتخب کرنے کے لیے کلک کریں",
+  label_bizname:"بزنس کا نام", label_phone:"فون", label_email:"ای میل", label_address:"پتہ",
+  panel2_heading:"کلائنٹ کی معلومات", label_clientname:"کلائنٹ / کمپنی کا نام", ph_clientname:"کلائنٹ کا نام",
+  label_clientphone:"کلائنٹ کا فون", label_clientemail:"کلائنٹ کا ای میل",
+  panel3_heading:"انوائس کی تفصیلات", label_invnumber:"انوائس نمبر", label_currency:"کرنسی",
+  label_issuedate:"جاری کرنے کی تاریخ", label_duedate:"آخری تاریخ",
+  panel4_heading:"اشیاء اور خدمات", col_desc:"تفصیل", col_qty:"تعداد", col_unit:"یونٹ", col_price:"قیمت", col_total:"ٹوٹل",
+  add_item_btn:"+ آئٹم شامل کریں", col_subtotal:"سب ٹوٹل", col_tax:"ٹیکس (%)", col_discount:"رعایت (%)", col_grandtotal:"کل رقم",
+  col_tax_short:"ٹیکس", col_discount_short:"رعایت",
+  panel5_heading:"ادائیگی کی تفصیلات (کلائنٹ یہاں پیسے بھیجے گا)",
+  panel5_desc:"یہ تفصیلات انوائس پر پرنٹ ہوں گی تاکہ کلائنٹ براہ راست آپ کے اکاؤنٹ میں منتقل کر سکے۔ جو خالی چھوڑیں گے وہ انوائس پر نظر نہیں آئے گا۔",
+  label_banktransfer:"🏦 بینک ٹرانسفر", label_bankname:"بینک کا نام", label_accounttitle:"اکاؤنٹ ٹائٹل", ph_accountholder:"اکاؤنٹ ہولڈر کا نام",
+  label_accountnum:"اکاؤنٹ نمبر / آئی بی اے این", label_easypaisa:"📱 ایزی پیسہ", label_easypaisanum:"ایزی پیسہ نمبر", ph_naam:"نام",
+  label_jazzcash:"📱 جاز کیش", label_jazzcashnum:"جاز کیش نمبر",
+  panel6_heading:"نوٹس / شرائط", ph_notes:"مثلاً۔ ادائیگی 7 دن کے اندر کریں۔ شکریہ!",
+  live_preview:"لائیو پیش منظر", paid_stamp:"ادا شدہ", invoice_doc_title:"انوائس", bill_to:"بل موصول کنندہ",
+  pv_payment_heading:"ادائیگی کی تفصیلات — یہاں منتقل کریں",
+  bundle_banner_pre:"✓ رسائی فعال ہے — ", bundle_banner_post:" انوائسز باقی۔ پرنٹ فوراً اَنلاک ہے!",
+  pending_banner:"⏳ آپ کی ادائیگی مالک کی طرف سے تصدیق ہو رہی ہے۔ منظوری کے فوراً بعد پرنٹ اَنلاک ہو جائے گا۔",
+  refresh_status:"سٹیٹس ریفریش کریں",
+  buy_print_access:"🔒 پرنٹ رسائی خریدیں (مالک کی منظوری ضروری ہے)",
+  print_btn:"🖨️ پرنٹ / PDF کے طور پر محفوظ کریں",
+  hint_approved:"مالک نے منظور کر لیا ہے — پرنٹ اَنلاک ہے۔ ہر پرنٹ پر 1 انوائس کریڈٹ استعمال ہوگا۔",
+  hint_pending:"مالک کی منظوری کا انتظار ہے۔",
+  hint_default:"پرنٹ بٹن صرف مالک کی منظوری کے بعد اَنلاک ہوتا ہے — کوئی بھی یوزر خود اَنلاک نہیں کر سکتا۔",
+  stamp_note:"صرف اپنے ریکارڈ کے لیے:", stamp_btn:"کلائنٹ نے مجھے ادائیگی کر دی (سٹیمپ)",
+  stamp_btn_done:"✓ کلائنٹ کی ادائیگی نوٹ ہو گئی",
+  how_eyebrow:"آسان طریقہ کار", how_h2:"صرف 4 مراحل میں انوائس تیار",
+  step1_title:"ٹیمپلیٹ چنیں", step1_desc:"6 پیشہ ورانہ ڈیزائنز میں سے اپنے بزنس کے لیے بہترین ڈیزائن منتخب کریں۔",
+  step2_title:"تفصیلات بھریں", step2_desc:"اپنا لوگو، بزنس کی معلومات اور آئٹمز شامل کریں — پیش منظر لائیو اپڈیٹ ہوتا ہے۔",
+  step3_title:"ادائیگی کریں", step3_desc:"کسی بھی پاکستانی بینک، ایزی پیسہ، جاز کیش یا انٹرنیشنل کارڈ سے ادائیگی کریں۔",
+  step4_title:"پرنٹ / ڈاؤن لوڈ", step4_desc:"اپنی پیشہ ورانہ انوائس پرنٹ کریں یا PDF کے طور پر محفوظ کریں۔",
+  footer_contact:"رابطہ:", footer_copyright:"© 2026 انوائس میکر پرو۔ ہر پاکستانی بزنس کے لیے بنایا گیا۔ 🇵🇰", admin_btn:"⚙ ایڈمن",
+  paymodal_title:"ادائیگی موصول ہونے کی تصدیق کریں", invoice_amount:"انوائس کی رقم",
+  paymodal_body:'آپ کی انوائس پر آپ کے <b>بینک/ایزی پیسہ/جاز کیش</b> کی تفصیلات پہلے سے پرنٹ ہیں، اس لیے کلائنٹ براہ راست وہاں منتقل کرے گا۔ جب رقم آپ کے اکاؤنٹ میں آ جائے تو نیچے تصدیق کریں تاکہ انوائس پر "ادا شدہ" کی مہر لگ جائے اور پرنٹ اَنلاک ہو۔',
+  received_via:"ادائیگی کس ذریعے سے موصول ہوئی؟", opt_banktransfer:"بینک ٹرانسفر", opt_easypaisa:"ایزی پیسہ", opt_jazzcash:"جاز کیش", opt_cash:"نقد", opt_other:"دیگر",
+  txn_ref_optional:"ٹرانزیکشن آئی ڈی / حوالہ (اختیاری)",
+  paymodal_tip:"💡 تجویز: کلائنٹ سے واٹس ایپ پر ادائیگی کا اسکرین شاٹ منگوائیں تاکہ تصدیق ہو سکے کہ رقم واقعی موصول ہوئی ہے، پھر یہاں نشان زد کریں۔",
+  pay_received_btn:"✓ جی ہاں، ادائیگی موصول ہو گئی", confirming_text:"تصدیق ہو رہی ہے...",
+  paymodal_success_title:"انوائس ادا شدہ نشان زد ہو گئی!", paymodal_success_desc:"اب آپ اپنی انوائس پرنٹ کر سکتے ہیں یا PDF کے طور پر محفوظ کر سکتے ہیں۔", continue_btn:"جاری رکھیں",
+  auth_title_register:"اکاؤنٹ بنائیں", auth_title_login:"اکاؤنٹ میں لاگ ان کریں",
+  tab_newaccount:"نیا اکاؤنٹ", label_username:"یوزر نیم", label_password:"پاسورڈ", ph_createpassword:"پاسورڈ بنائیں",
+  create_account_btn:"اکاؤنٹ بنائیں", login_btn:"لاگ ان کریں",
+  auth_note:"🔒 یہ اکاؤنٹ اس براؤزر میں محفوظ ہوتا ہے (کوئی لائیو سرور/ڈیٹا بیس نہیں)۔ حقیقی پروڈکشن کے لیے بیک اینڈ + ڈیٹا بیس درکار ہوگا تاکہ اکاؤنٹ ہر ڈیوائس پر کام کرے۔",
+  err_fill_both:"براہ کرم یوزر نیم اور پاسورڈ دونوں بھریں۔", err_user_exists:"یہ یوزر نیم پہلے سے موجود ہے۔ براہ کرم لاگ ان کریں۔",
+  err_server:"سرور میں مسئلہ، دوبارہ کوشش کریں۔", err_login_wrong:"یوزر نیم یا پاسورڈ غلط ہے۔",
+  buymodal_title:"بنڈل خریداری کی درخواست", bundle_label:"بنڈل",
+  buymodal_body:'نیچے دیے گئے کسی بھی اکاؤنٹ میں ادائیگی بھیجیں پھر اپنی ٹرانزیکشن آئی ڈی درج کریں۔ <b>مالک (رضا حسین) کی تصدیق کے بعد</b> آپ کے اکاؤنٹ میں انوائسز شامل کر دی جائیں گی۔',
+  account_title_colon:"اکاؤنٹ ٹائٹل:", buy_method_label:"آپ نے ادائیگی کس ذریعے سے بھیجی؟",
+  opt_banktransfer_ubl:"بینک ٹرانسفر (UBL)", txn_ref:"ٹرانزیکشن آئی ڈی / حوالہ",
+  buymodal_tip:'💡 جلدی تصدیق کے لیے ادائیگی کا اسکرین شاٹ <a href="https://wa.me/923459689810" target="_blank" style="color:var(--primary);font-weight:700;">واٹس ایپ (923459689810+)</a> پر بھیجیں۔',
+  send_request_btn:"ادائیگی کی درخواست بھیجیں",
+  buymodal_success_title:"درخواست بھیج دی گئی!", buymodal_success_desc:"مالک آپ کی ادائیگی کی تصدیق کرے گا، اس کے بعد آپ کا بنڈل فعال ہو جائے گا اور پرنٹ اَنلاک ہو جائے گا۔", ok_btn:"ٹھیک ہے",
+  err_send_request:"درخواست بھیجنے میں مسئلہ ہوا، دوبارہ کوشش کریں۔",
+  adminlogin_title:"ایڈمن لاگ ان", admin_password_label:"ایڈمن پاسورڈ", err_admin_wrong:"پاسورڈ غلط ہے۔",
+  adminpanel_title:"ایڈمن پینل — ادائیگی کی درخواستیں", pending_requests_heading:"زیر التوا درخواستیں",
+  past_requests_heading:"پرانی درخواستیں", registered_users_heading:"رجسٹرڈ یوزرز", clear_all_data_btn:"🗑 تمام ڈیٹا صاف کریں",
+  no_pending:"کوئی زیر التوا درخواست نہیں۔", no_past:"ابھی تک کوئی پرانی درخواست نہیں۔", no_users:"ابھی تک کوئی رجسٹرڈ یوزر نہیں۔",
+  approve_btn:"✓ منظور کریں", reject_btn:"✕ مسترد کریں", approved_status:"✓ منظور شدہ", rejected_status:"✕ مسترد شدہ",
+  via_text:"بذریعہ", ref_text:"حوالہ", invoices_word:"انوائسز", invoices_left_admin:"انوائسز باقی", delete_btn:"🗑 حذف کریں",
+  confirm_delete_user:'"{u}" کا اکاؤنٹ اور اس کی ساری ہسٹری حذف کریں؟ یہ واپس نہیں ہو سکتا۔',
+  confirm_clear_all:"تمام یوزرز، درخواستیں اور لاگ ان سیشنز مستقل طور پر حذف ہو جائیں گے۔ تصدیق کریں؟",
+  tpl_label_names:{modern:'ماڈرن ایمرلڈ', minimal:'کلین منیمل', corporate:'کارپوریٹ نیوی', creative:'کریئٹو گریڈینٹ', classic:'کلاسک ٹریڈر', bold:'بولڈ ڈارک'},
+  fallback_notice:"⚠ آف لائن پیش منظر موڈ — ڈیٹا عارضی ہے اور ڈیوائسز کے درمیان سنک نہیں ہوگا۔",
+  nav_findinvoice:"پرانی انوائس ڈھونڈیں", findinv_title:"پرانی انوائس تلاش کریں",
+  findinv_desc:"اگر کلائنٹ کہے کہ اس کی انوائس میں کوئی مسئلہ ہے، تو نیچے انوائس نمبر لکھیں — چاہے وہ انوائس کتنے دن، مہینے یا سال پہلے بنی ہو، وہ دوبارہ کھل جائے گی۔",
+  findinv_label:"انوائس نمبر", findinv_placeholder:"مثلاً INV-2026-0142", findinv_btn:"🔎 انوائس ڈھونڈیں",
+  findinv_searching:"تلاش ہو رہی ہے…", findinv_notfound:"اس نمبر کی کوئی انوائس نہیں ملی۔ براہ کرم نمبر چیک کر کے دوبارہ کوشش کریں۔",
+  findinv_enter_number:"براہ کرم انوائس نمبر درج کریں۔",
+  findinv_loaded:"✓ انوائس نمبر {n} لوڈ ہو گئی — یہ {d} کو محفوظ کی گئی تھی۔ اب یہ نیچے پیش منظر میں دکھائی جا رہی ہے۔",
+  save_confirmation:"✓ انوائس نمبر {n} محفوظ ہو گئی — آپ اسے کبھی بھی \"پرانی انوائس ڈھونڈیں\" سے دیکھ سکتے ہیں۔",
+  save_for_lookup_btn:"💾 انوائس محفوظ کریں (بعد میں نمبر سے تلاش کے لیے)",
+  invnumber_auto_note:"🔒 خودکار طور پر بنایا گیا — ہر اکاؤنٹ کے لیے مختلف، ہر پرنٹ کے بعد خودکار تبدیل ہوتا ہے۔",
+  create_new_invoice_btn:"🆕 نیا انوائس بنائیں",
+  invmode_new:"🆕 نیا انوائس — نمبر خودکار طور پر لگے گا۔",
+  invmode_editing:"✏️ محفوظ شدہ انوائس نمبر {n} میں تبدیلی — پرنٹ کرنے سے یہی انوائس اپڈیٹ ہوگی۔"
+}
+};
+
+let lang = 'en';
+function t(key){ return (I18N[lang] && I18N[lang][key]) || (I18N.en[key]) || key; }
+
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.dataset.i18nPh); });
+  document.body.classList.toggle('lang-ur', lang==='ur');
+  document.getElementById('langToggle').textContent = lang==='ur' ? 'EN' : 'اردو';
+  const authTitleEl = document.getElementById('authModalTitle');
+  const activeTab = document.querySelector('[data-authtab].active');
+  if(authTitleEl && activeTab){ authTitleEl.textContent = activeTab.dataset.authtab==='login' ? t('auth_title_login') : t('auth_title_register'); }
+  const tplCard = document.querySelector('.tpl-card.selected');
+  if(tplCard){ document.getElementById('tplLabel').textContent = t('tpl_label_names')[tplCard.dataset.tpl]; }
+  if(typeof renderItemsForm==='function') renderItemsForm();
+  if(typeof renderPreview==='function') renderPreview();
+  if(typeof updateAccountUI==='function') updateAccountUI();
+  if(typeof adminAuthed!=='undefined' && adminAuthed && document.getElementById('adminPanelModal').classList.contains('open') && typeof renderAdminPanel==='function') renderAdminPanel();
+}
+
+document.getElementById('langToggle').addEventListener('click', ()=>{
+  lang = lang==='en' ? 'ur' : 'en';
+  applyI18n();
+});
+
+// ---------- THEME ----------
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('dark');
+});
+
+// ---------- TEMPLATE SELECTION ----------
+document.querySelectorAll('.tpl-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    const tpl = card.dataset.tpl;
+    const preview = document.getElementById('invoicePreview');
+    preview.className = '';
+    preview.classList.add('tpl-'+tpl);
+    document.getElementById('tplLabel').textContent = t('tpl_label_names')[tpl];
+  });
+});
+
+// ---------- ITEMS STATE ----------
+let items = [
+  { desc:'Web Design Services', qty:1, unit:'pcs', price:45000 },
+  { desc:'Monthly Maintenance', qty:1, unit:'month', price:8000 }
+];
+
+function renderItemsForm(){
+  const body = document.getElementById('itemsBody');
+  body.innerHTML = '';
+  items.forEach((item, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input data-idx="${idx}" data-field="desc" value="${item.desc}" placeholder="Service/Item name"></td>
+      <td><input data-idx="${idx}" data-field="qty" type="number" min="1" value="${item.qty}" style="width:52px;"></td>
+      <td><input data-idx="${idx}" data-field="unit" list="unitOptions" value="${item.unit||'pcs'}" style="width:72px;" placeholder="kg/strip"></td>
+      <td><input data-idx="${idx}" data-field="price" type="number" min="0" value="${item.price}" style="width:80px;"></td>
+      <td><button class="item-remove" data-idx="${idx}">✕</button></td>`;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const idx = e.target.dataset.idx, field = e.target.dataset.field;
+      items[idx][field] = (field==='desc' || field==='unit') ? e.target.value : Number(e.target.value)||0;
+      renderPreview();
+    });
+  });
+  body.querySelectorAll('.item-remove').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      items.splice(Number(e.target.dataset.idx),1);
+      renderItemsForm(); renderPreview();
+    });
+  });
+}
+document.getElementById('addItemBtn').addEventListener('click', ()=>{
+  items.push({ desc:'', qty:1, unit:'pcs', price:0 });
+  renderItemsForm(); renderPreview();
+});
+
+// ---------- LOGO UPLOAD ----------
+let logoDataUrl = null;
+document.getElementById('logoInput').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    logoDataUrl = ev.target.result;
+    document.getElementById('logoPreviewImg').src = logoDataUrl;
+    document.getElementById('logoPreviewImg').style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+// ---------- DATES DEFAULT ----------
+const today = new Date();
+const due = new Date(); due.setDate(due.getDate()+7);
+document.getElementById('invDate').value = today.toISOString().slice(0,10);
+document.getElementById('dueDate').value = due.toISOString().slice(0,10);
+
+// ---------- LIVE PREVIEW ----------
+// editingExistingInvoice: true after "Find Old Invoice" loads a saved invoice into the
+// builder. While true: the invoice number stays locked to THAT invoice (auto-numbering
+// leaves it alone) and editing/printing updates that same saved invoice — it does NOT
+// consume a new number. It only goes back to false when the person explicitly presses
+// "Create New Invoice", or right after a fresh (non-edited) invoice gets printed.
+let editingExistingInvoice = false;
+const fields = ['bizName','bizPhone','bizEmail','bizAddress','clientName','clientPhone','clientEmail','invNumber','currency','invDate','dueDate','invNotes','taxPct','discPct',
+  'showBank','bankName','bankTitle','bankAccNum','showEasypaisa','easypaisaNum','easypaisaTitle','showJazzcash','jazzcashNum','jazzcashTitle'];
+fields.forEach(id=>{
+  document.getElementById(id).addEventListener('input', renderPreview);
+  document.getElementById(id).addEventListener('change', renderPreview);
+});
+
+function currencySym(){ return document.getElementById('currency').value; }
+function fmt(n){ return currencySym()+' '+Number(n).toLocaleString('en-US', {maximumFractionDigits:0}); }
+
+function renderPreview(){
+  const bizName = document.getElementById('bizName').value || 'Your Business Name';
+  const bizPhone = document.getElementById('bizPhone').value;
+  const bizEmail = document.getElementById('bizEmail').value;
+  const bizAddress = document.getElementById('bizAddress').value;
+  const clientName = document.getElementById('clientName').value || 'Client Name';
+  const clientPhone = document.getElementById('clientPhone').value;
+  const clientEmail = document.getElementById('clientEmail').value;
+  const invNumber = document.getElementById('invNumber').value;
+  const invDate = document.getElementById('invDate').value;
+  const dueDate = document.getElementById('dueDate').value;
+  const notes = document.getElementById('invNotes').value;
+  const taxPct = Number(document.getElementById('taxPct').value)||0;
+  const discPct = Number(document.getElementById('discPct').value)||0;
+
+  document.getElementById('pvBizName').textContent = bizName;
+  document.getElementById('pvBizMeta').innerHTML = [bizAddress, bizPhone, bizEmail].filter(Boolean).join('<br>');
+  document.getElementById('pvClientName').textContent = clientName;
+  document.getElementById('pvClientMeta').innerHTML = [clientPhone, clientEmail].filter(Boolean).join('<br>');
+  document.getElementById('pvInvNumber').textContent = 'Invoice #: ' + invNumber;
+  document.getElementById('pvInvDates').textContent = 'Date: ' + invDate + '  |  Due: ' + dueDate;
+  document.getElementById('pvNotes').textContent = notes;
+
+  if(logoDataUrl){
+    document.getElementById('pvLogo').src = logoDataUrl;
+    document.getElementById('pvLogo').style.display = 'block';
+  }
+
+  const body = document.getElementById('pvItemsBody');
+  body.innerHTML = '';
+  let subtotal = 0;
+  items.forEach(item=>{
+    const total = item.qty * item.price;
+    subtotal += total;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${item.desc||'-'}</td><td>${item.qty}</td><td>${item.unit||'pcs'}</td><td>${fmt(item.price)}</td><td>${fmt(total)}</td>`;
+    body.appendChild(tr);
+  });
+
+  const taxAmt = subtotal * taxPct/100;
+  const discAmt = subtotal * discPct/100;
+  const grand = subtotal + taxAmt - discAmt;
+
+  document.getElementById('subtotalDisp').textContent = fmt(subtotal);
+  document.getElementById('grandTotalDisp').textContent = fmt(grand);
+  document.getElementById('pvSubtotal').textContent = fmt(subtotal);
+  document.getElementById('pvTax').textContent = fmt(taxAmt);
+  document.getElementById('pvDisc').textContent = '-' + fmt(discAmt);
+  document.getElementById('pvGrandTotal').textContent = fmt(grand);
+  document.getElementById('pvTaxRow').style.display = taxPct>0 ? 'flex':'none';
+  document.getElementById('pvDiscRow').style.display = discPct>0 ? 'flex':'none';
+  document.getElementById('modalAmount').textContent = fmt(grand);
+
+  // Payment details box
+  const payRows = [];
+  if(document.getElementById('showBank').checked){
+    const bn = document.getElementById('bankName').value;
+    const bt = document.getElementById('bankTitle').value;
+    const ban = document.getElementById('bankAccNum').value;
+    if(bn || ban){
+      payRows.push(`<div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:#666;">🏦 ${bn||'Bank Transfer'}</span><span style="font-weight:700;text-align:right;">${ban||'—'}${bt? ' ('+bt+')':''}</span></div>`);
+    }
+  }
+  if(document.getElementById('showEasypaisa').checked){
+    const en = document.getElementById('easypaisaNum').value;
+    const et = document.getElementById('easypaisaTitle').value;
+    if(en){
+      payRows.push(`<div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:#666;">📱 Easypaisa</span><span style="font-weight:700;text-align:right;">${en}${et? ' ('+et+')':''}</span></div>`);
+    }
+  }
+  if(document.getElementById('showJazzcash').checked){
+    const jn = document.getElementById('jazzcashNum').value;
+    const jt = document.getElementById('jazzcashTitle').value;
+    if(jn){
+      payRows.push(`<div style="display:flex;justify-content:space-between;font-size:11.5px;"><span style="color:#666;">📱 JazzCash</span><span style="font-weight:700;text-align:right;">${jn}${jt? ' ('+jt+')':''}</span></div>`);
+    }
+  }
+  const box = document.getElementById('pvPaymentBox');
+  if(payRows.length){
+    box.style.display = 'block';
+    document.getElementById('pvPaymentRows').innerHTML = payRows.join('');
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+renderItemsForm();
+renderPreview();
+document.addEventListener('DOMContentLoaded', ()=>{ if(typeof updateInvoiceModeIndicator==='function') updateInvoiceModeIndicator(); });
+if(document.readyState !== 'loading' && typeof updateInvoiceModeIndicator === 'function') updateInvoiceModeIndicator();
+
+// ---------- AUTO INVOICE NUMBERING (unique per account, auto-advances after each print) ----------
+function generateInvoiceNumberFor(username){
+  if(!username){
+    // Not logged in yet — still produce a unique-enough placeholder so nothing collides.
+    return 'INV-' + new Date().getFullYear() + '-' + Date.now().toString().slice(-6);
+  }
+  const seq = (usersCache[username] && usersCache[username].invoiceSeq) ? usersCache[username].invoiceSeq : 1;
+  const tag = username.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,6) || 'USER';
+  // Including the account's username/tag guarantees two different users can never end up
+  // with the same invoice number, even if their counters are at the same position.
+  return 'INV-' + new Date().getFullYear() + '-' + tag + '-' + String(seq).padStart(4,'0');
+}
+
+function assignFreshInvoiceNumber(){
+  if(editingExistingInvoice) return; // don't clobber a saved invoice the user is currently viewing/editing
+  const field = document.getElementById('invNumber');
+  if(!field) return;
+  field.value = generateInvoiceNumberFor(currentUser);
+  if(typeof renderPreview === 'function') renderPreview();
+  updateInvoiceModeIndicator();
+}
+
+// Clears everything that's specific to ONE invoice (client, items, notes, dates,
+// tax/discount) so the form is ready for the next invoice. Business info, logo, and
+// saved payment details are left as-is since those describe the business itself, not
+// any single invoice, and re-typing them every time would be a hassle.
+function clearInvoiceContentFields(){
+  document.getElementById('clientName').value = '';
+  document.getElementById('clientPhone').value = '';
+  document.getElementById('clientEmail').value = '';
+  document.getElementById('invNotes').value = '';
+  document.getElementById('taxPct').value = 0;
+  document.getElementById('discPct').value = 0;
+  const todayNow = new Date();
+  const dueNow = new Date(); dueNow.setDate(dueNow.getDate()+7);
+  document.getElementById('invDate').value = todayNow.toISOString().slice(0,10);
+  document.getElementById('dueDate').value = dueNow.toISOString().slice(0,10);
+  items = [{ desc:'', qty:1, unit:'pcs', price:0 }];
+  renderItemsForm();
+  renderPreview();
+}
+
+// Starts a brand new invoice: clears the per-invoice fields above AND assigns the next
+// number in this account's sequence (e.g. if invoices 1–5 already exist, this becomes 6).
+function startNewInvoice(){
+  editingExistingInvoice = false;
+  clearInvoiceContentFields();
+  assignFreshInvoiceNumber();
+}
+
+async function advanceInvoiceNumberForCurrentUser(){
+  if(currentUser){
+    const nextSeq = ((usersCache[currentUser] && usersCache[currentUser].invoiceSeq) || 1) + 1;
+    usersCache[currentUser] = Object.assign({}, usersCache[currentUser], { invoiceSeq: nextSeq });
+    try{
+      await db.collection('imp_users').doc(currentUser).update({ invoiceSeq: nextSeq });
+    }catch(e){
+      console.error('Could not advance this account\'s invoice number counter:', e);
+    }
+  }
+  editingExistingInvoice = false;
+  assignFreshInvoiceNumber();
+}
+
+// Small status line under the invoice number field so it's always clear whether the
+// person is working on a fresh invoice or editing/reprinting a previously saved one.
+function updateInvoiceModeIndicator(){
+  const el = document.getElementById('invModeIndicator');
+  if(!el) return;
+  if(editingExistingInvoice){
+    const num = document.getElementById('invNumber').value;
+    el.textContent = t('invmode_editing').replace('{n}', num);
+    el.style.color = 'var(--accent-dark)';
+  } else {
+    el.textContent = t('invmode_new');
+    el.style.color = 'var(--muted)';
+  }
+}
+
+document.getElementById('createNewInvoiceBtn').addEventListener('click', ()=>{
+  startNewInvoice();
+  document.getElementById('builder').scrollIntoView({ behavior:'smooth' });
+});
+
+// ---------- SAVE / FIND INVOICE BY NUMBER ----------
+// Every issued invoice is stored (keyed by its invoice number) so it can be pulled back
+// up later — e.g. when a client says something is wrong with an invoice from days,
+// months, or years ago, the business owner can look it up here instead of redoing it.
+function collectInvoiceData(){
+  const tplCard = document.querySelector('.tpl-card.selected');
+  return {
+    bizName: document.getElementById('bizName').value,
+    bizPhone: document.getElementById('bizPhone').value,
+    bizEmail: document.getElementById('bizEmail').value,
+    bizAddress: document.getElementById('bizAddress').value,
+    clientName: document.getElementById('clientName').value,
+    clientPhone: document.getElementById('clientPhone').value,
+    clientEmail: document.getElementById('clientEmail').value,
+    invNumber: document.getElementById('invNumber').value,
+    currency: document.getElementById('currency').value,
+    invDate: document.getElementById('invDate').value,
+    dueDate: document.getElementById('dueDate').value,
+    invNotes: document.getElementById('invNotes').value,
+    taxPct: document.getElementById('taxPct').value,
+    discPct: document.getElementById('discPct').value,
+    showBank: document.getElementById('showBank').checked,
+    bankName: document.getElementById('bankName').value,
+    bankTitle: document.getElementById('bankTitle').value,
+    bankAccNum: document.getElementById('bankAccNum').value,
+    showEasypaisa: document.getElementById('showEasypaisa').checked,
+    easypaisaNum: document.getElementById('easypaisaNum').value,
+    easypaisaTitle: document.getElementById('easypaisaTitle').value,
+    showJazzcash: document.getElementById('showJazzcash').checked,
+    jazzcashNum: document.getElementById('jazzcashNum').value,
+    jazzcashTitle: document.getElementById('jazzcashTitle').value,
+    items: JSON.parse(JSON.stringify(items)),
+    logoDataUrl: logoDataUrl,
+    template: tplCard ? tplCard.dataset.tpl : 'modern',
+    savedBy: (typeof currentUser !== 'undefined' ? currentUser : null),
+    savedAt: new Date().toLocaleString()
+  };
+}
+
+async function saveInvoiceRecord(){
+  const invNumber = document.getElementById('invNumber').value.trim();
+  if(!invNumber) return null;
+  const data = collectInvoiceData();
+
+  // Write a synchronous local backup FIRST. This guarantees the invoice is recoverable
+  // even if window.print() (called right after this) freezes the tab before the
+  // network request to Firestore below has a chance to finish.
+  try{
+    localStorage.setItem('imp_invoice_backup_' + invNumber, JSON.stringify(data));
+  }catch(e){
+    console.error('Local backup save failed:', e);
+  }
+
+  try{
+    await db.collection('imp_invoices').doc(invNumber).set(data);
+    return data;
+  }catch(e){
+    console.error('Could not save invoice to the database (a local backup was still saved on this device/browser):', e);
+    return data;
+  }
+}
+
+function getLocalInvoiceBackup(invNumber){
+  try{
+    const raw = localStorage.getItem('imp_invoice_backup_' + invNumber);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){
+    return null;
+  }
+}
+
+function loadInvoiceIntoBuilder(data){
+  editingExistingInvoice = true;
+  document.getElementById('bizName').value = data.bizName || '';
+  document.getElementById('bizPhone').value = data.bizPhone || '';
+  document.getElementById('bizEmail').value = data.bizEmail || '';
+  document.getElementById('bizAddress').value = data.bizAddress || '';
+  document.getElementById('clientName').value = data.clientName || '';
+  document.getElementById('clientPhone').value = data.clientPhone || '';
+  document.getElementById('clientEmail').value = data.clientEmail || '';
+  document.getElementById('invNumber').value = data.invNumber || '';
+  document.getElementById('currency').value = data.currency || 'Rs';
+  document.getElementById('invDate').value = data.invDate || '';
+  document.getElementById('dueDate').value = data.dueDate || '';
+  document.getElementById('invNotes').value = data.invNotes || '';
+  document.getElementById('taxPct').value = data.taxPct || 0;
+  document.getElementById('discPct').value = data.discPct || 0;
+  document.getElementById('showBank').checked = !!data.showBank;
+  document.getElementById('bankName').value = data.bankName || '';
+  document.getElementById('bankTitle').value = data.bankTitle || '';
+  document.getElementById('bankAccNum').value = data.bankAccNum || '';
+  document.getElementById('showEasypaisa').checked = !!data.showEasypaisa;
+  document.getElementById('easypaisaNum').value = data.easypaisaNum || '';
+  document.getElementById('easypaisaTitle').value = data.easypaisaTitle || '';
+  document.getElementById('showJazzcash').checked = !!data.showJazzcash;
+  document.getElementById('jazzcashNum').value = data.jazzcashNum || '';
+  document.getElementById('jazzcashTitle').value = data.jazzcashTitle || '';
+
+  items = Array.isArray(data.items) && data.items.length ? JSON.parse(JSON.stringify(data.items)) : [];
+
+  logoDataUrl = data.logoDataUrl || null;
+  const logoImg = document.getElementById('logoPreviewImg');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  if(logoDataUrl){ logoImg.src = logoDataUrl; logoImg.style.display = 'block'; logoPlaceholder.style.display = 'none'; }
+  else{ logoImg.style.display = 'none'; logoPlaceholder.style.display = 'block'; }
+
+  const tpl = data.template || 'modern';
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('selected', c.dataset.tpl===tpl));
+  const preview = document.getElementById('invoicePreview');
+  preview.className = '';
+  preview.classList.add('tpl-'+tpl);
+  document.getElementById('tplLabel').textContent = (t('tpl_label_names') && t('tpl_label_names')[tpl]) || tpl;
+
+  renderItemsForm();
+  renderPreview();
+  updateInvoiceModeIndicator();
+}
+
+const findInvoiceModal = document.getElementById('findInvoiceModal');
+document.getElementById('findInvoiceNavLink').addEventListener('click', (e)=>{
+  e.preventDefault();
+  document.getElementById('findInvoiceMsg').style.display = 'none';
+  document.getElementById('findInvoiceInput').value = '';
+  findInvoiceModal.classList.add('open');
+});
+document.getElementById('closeFindInvoiceBtn').addEventListener('click', ()=> findInvoiceModal.classList.remove('open'));
+findInvoiceModal.addEventListener('click', e=>{ if(e.target===findInvoiceModal) findInvoiceModal.classList.remove('open'); });
+
+async function findInvoiceByNumber(){
+  const msgEl = document.getElementById('findInvoiceMsg');
+  const num = document.getElementById('findInvoiceInput').value.trim();
+  msgEl.style.color = 'var(--danger)';
+  if(!num){
+    msgEl.textContent = t('findinv_enter_number');
+    msgEl.style.display = 'block';
+    return;
+  }
+  msgEl.style.color = 'var(--muted)';
+  msgEl.textContent = t('findinv_searching');
+  msgEl.style.display = 'block';
+  let data = null;
+  try{
+    const snap = await db.collection('imp_invoices').doc(num).get();
+    if(snap.exists) data = snap.data();
+  }catch(e){
+    console.error('Database invoice lookup failed, will try local backup:', e);
+  }
+  if(!data){
+    // Fall back to this device's local backup (saved automatically whenever an
+    // invoice was printed or manually saved) in case the database write/read
+    // didn't go through — e.g. no internet connection at the time.
+    data = getLocalInvoiceBackup(num);
+  }
+  if(!data){
+    msgEl.style.color = 'var(--danger)';
+    msgEl.textContent = t('findinv_notfound');
+    return;
+  }
+  loadInvoiceIntoBuilder(data);
+  findInvoiceModal.classList.remove('open');
+  document.getElementById('builder').scrollIntoView({ behavior:'smooth' });
+  const successMsg = t('findinv_loaded').replace('{n}', data.invNumber || num).replace('{d}', data.savedAt || '');
+  const loadedBanner = document.getElementById('invoiceLoadedBanner');
+  loadedBanner.textContent = successMsg;
+  loadedBanner.style.display = 'block';
+  setTimeout(()=>{ loadedBanner.style.display = 'none'; }, 8000);
+}
+document.getElementById('findInvoiceBtn').addEventListener('click', findInvoiceByNumber);
+document.getElementById('findInvoiceInput').addEventListener('keydown', e=>{ if(e.key==='Enter') findInvoiceByNumber(); });
+
+document.getElementById('saveForLookupBtn').addEventListener('click', async ()=>{
+  const invNumber = document.getElementById('invNumber').value.trim();
+  const loadedBanner = document.getElementById('invoiceLoadedBanner');
+  if(!invNumber){
+    loadedBanner.style.color = 'var(--danger)';
+    loadedBanner.textContent = t('findinv_enter_number');
+    loadedBanner.style.display = 'block';
+    setTimeout(()=>{ loadedBanner.style.display = 'none'; }, 5000);
+    return;
+  }
+  const saved = await saveInvoiceRecord();
+  if(saved){
+    loadedBanner.style.color = 'var(--primary)';
+    loadedBanner.textContent = t('save_confirmation').replace('{n}', invNumber);
+    loadedBanner.style.display = 'block';
+    setTimeout(()=>{ loadedBanner.style.display = 'none'; }, 6000);
+  }
+});
+
+// ---------- PAYMENT MODAL LOGIC ----------
+const payModal = document.getElementById('payModal');
+document.getElementById('openPayBtn').addEventListener('click', ()=>{
+  payModal.classList.add('open');
+  document.getElementById('payStageSelect').style.display='block';
+  document.getElementById('payProcessing').classList.remove('show');
+  document.getElementById('paySuccess').classList.remove('show');
+});
+document.getElementById('closeModalBtn').addEventListener('click', ()=> payModal.classList.remove('open'));
+payModal.addEventListener('click', e=>{ if(e.target===payModal) payModal.classList.remove('open'); });
+
+document.getElementById('payNowBtn').addEventListener('click', ()=>{
+  document.getElementById('payStageSelect').style.display='none';
+  document.getElementById('payProcessing').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('payProcessing').classList.remove('show');
+    document.getElementById('paySuccess').classList.add('show');
+  }, 900);
+});
+
+document.getElementById('continueBtn').addEventListener('click', ()=>{
+  payModal.classList.remove('open');
+  document.getElementById('openPayBtn').textContent = t('stamp_btn_done');
+  document.getElementById('openPayBtn').disabled = true;
+  document.getElementById('paidStamp').classList.add('show');
+});
+
+document.getElementById('printBtn').addEventListener('click', async ()=>{
+  if(currentUser && usersCache[currentUser] && usersCache[currentUser].credits > 0){
+    db.collection('imp_users').doc(currentUser).update({ credits: usersCache[currentUser].credits - 1 })
+      .catch(e=>console.error('Credit update failed:', e));
+  }
+  updateAccountUI();
+
+  // Save a copy of this invoice (keyed by invoice number) so it can be pulled back up
+  // later via "Find Old Invoice" if a client reports an issue with it.
+  // This is awaited BEFORE window.print() below, because window.print() opens a
+  // blocking native dialog that can pause the page's JS — if we didn't wait here,
+  // the save could get cut off before it finished.
+  await saveInvoiceRecord();
+
+  const invoiceEl = document.getElementById('invoicePreview');
+  const printArea = document.getElementById('printArea');
+  const originalParent = invoiceEl.parentNode;
+  const originalNextSibling = invoiceEl.nextSibling;
+
+  printArea.appendChild(invoiceEl);
+
+  let numberAdvanced = false;
+  const restore = ()=>{
+    if(originalNextSibling){ originalParent.insertBefore(invoiceEl, originalNextSibling); }
+    else{ originalParent.appendChild(invoiceEl); }
+    window.removeEventListener('afterprint', restore);
+    if(!numberAdvanced){
+      numberAdvanced = true;
+      if(editingExistingInvoice){
+        // This was an edit/reprint of an invoice pulled up via "Find Old Invoice" — it
+        // keeps its original number and the form stays as-is (already saved above).
+        updateInvoiceModeIndicator();
+      } else {
+        // A brand new invoice was just printed: roll this account's number forward AND
+        // clear the form so it's ready for the next invoice, empty and with a new number.
+        advanceInvoiceNumberForCurrentUser().then(clearInvoiceContentFields);
+      }
+    }
+  };
+  window.addEventListener('afterprint', restore);
+
+  window.print();
+  // Fallback restore in case afterprint doesn't fire (some browsers/print-to-PDF flows)
+  setTimeout(restore, 2000);
+});
+
+// ---------- ACCOUNT / BUNDLE SYSTEM (FIREBASE FIRESTORE) ----------
+let usersCache = {};
+let requestsCache = [];
+let currentUser = localStorage.getItem('imp_currentUser') || null;
+let pendingBundle = null;
+// Declared here (not just further below) because the local-fallback DB fires its
+// onSnapshot listeners synchronously, which runs the code below right away —
+// before the script would otherwise reach these declarations.
+let adminAuthed = false;
+const adminPanelModal = document.getElementById('adminPanelModal');
+
+// Real-time listeners: jab bhi Firestore mein data change ho (kisi bhi device se),
+// ye khud-ba-khud sab devices/browsers par UI update kar dega.
+db.collection('imp_users').onSnapshot(snapshot=>{
+  usersCache = {};
+  snapshot.forEach(doc=>{ usersCache[doc.id] = doc.data(); });
+  updateAccountUI();
+  if(typeof adminAuthed!=='undefined' && adminAuthed && adminPanelModal.classList.contains('open')) renderAdminPanel();
+}, err=>{ console.error('Firestore users error:', err); });
+
+db.collection('imp_requests').onSnapshot(snapshot=>{
+  requestsCache = [];
+  snapshot.forEach(doc=>{ requestsCache.push({ id: doc.id, ...doc.data() }); });
+  updateAccountUI();
+  if(typeof adminAuthed!=='undefined' && adminAuthed && adminPanelModal.classList.contains('open')) renderAdminPanel();
+}, err=>{ console.error('Firestore requests error:', err); });
+
+function getUsers(){ return usersCache; }
+function getRequests(){ return requestsCache; }
+
+function updateAccountUI(){
+  const loggedOutArea = document.getElementById('loggedOutArea');
+  const loggedInArea = document.getElementById('loggedInArea');
+  const bundleBanner = document.getElementById('bundleActiveBanner');
+  const pendingBanner = document.getElementById('pendingApprovalBanner');
+  const payCtaRow = document.getElementById('payCtaRow');
+  const printHint = document.getElementById('printHintText');
+  const printBtn = document.getElementById('printBtn');
+
+  if(currentUser){
+    const users = getUsers();
+    const credits = users[currentUser] ? users[currentUser].credits : 0;
+    const hasPending = getRequests().some(r => r.username===currentUser && r.status==='pending');
+    loggedOutArea.style.display = 'none';
+    loggedInArea.style.display = 'flex';
+    document.getElementById('creditsBadge').textContent = credits + ' ' + t('credits_suffix');
+
+    if(credits > 0){
+      bundleBanner.style.display = 'block';
+      pendingBanner.style.display = 'none';
+      document.getElementById('bundleCountText').textContent = credits;
+      payCtaRow.style.display = 'none';
+      printBtn.disabled = false;
+      printHint.textContent = t('hint_approved');
+    } else if(hasPending){
+      bundleBanner.style.display = 'none';
+      pendingBanner.style.display = 'block';
+      payCtaRow.style.display = 'none';
+      printBtn.disabled = true;
+      printHint.textContent = t('hint_pending');
+    } else {
+      bundleBanner.style.display = 'none';
+      pendingBanner.style.display = 'none';
+      payCtaRow.style.display = 'flex';
+      printHint.textContent = t('hint_default');
+      printBtn.disabled = true;
+    }
+  } else {
+    loggedOutArea.style.display = 'block';
+    loggedInArea.style.display = 'none';
+    bundleBanner.style.display = 'none';
+    pendingBanner.style.display = 'none';
+    payCtaRow.style.display = 'flex';
+    printBtn.disabled = true;
+  }
+  if(typeof assignFreshInvoiceNumber === 'function') assignFreshInvoiceNumber();
+}
+
+document.getElementById('refreshStatusBtn').addEventListener('click', updateAccountUI);
+
+// Auth modal
+const authModal = document.getElementById('authModal');
+document.getElementById('loginNavBtn').addEventListener('click', ()=> authModal.classList.add('open'));
+document.getElementById('closeAuthBtn').addEventListener('click', ()=> authModal.classList.remove('open'));
+authModal.addEventListener('click', e=>{ if(e.target===authModal) authModal.classList.remove('open'); });
+
+document.querySelectorAll('[data-authtab]').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('[data-authtab]').forEach(tb=>tb.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('registerForm').style.display = tab.dataset.authtab==='register' ? 'block':'none';
+    document.getElementById('loginForm').style.display = tab.dataset.authtab==='login' ? 'block':'none';
+    document.getElementById('authModalTitle').textContent = tab.dataset.authtab==='login' ? t('auth_title_login') : t('auth_title_register');
+  });
+});
+
+document.getElementById('registerBtn').addEventListener('click', async ()=>{
+  const u = document.getElementById('regUsername').value.trim();
+  const p = document.getElementById('regPassword').value;
+  const err = document.getElementById('regError');
+  if(!u || !p){ err.textContent=t('err_fill_both'); err.style.display='block'; return; }
+  if(usersCache[u]){ err.textContent=t('err_user_exists'); err.style.display='block'; return; }
+  try{
+    await db.collection('imp_users').doc(u).set({ password:p, credits:0, invoiceSeq:1 });
+  }catch(e){ err.textContent=t('err_server'); err.style.display='block'; return; }
+  currentUser = u;
+  localStorage.setItem('imp_currentUser', u);
+  err.style.display='none';
+  authModal.classList.remove('open');
+  updateAccountUI();
+  if(pendingBundle){ openBuyModalConfirm(); }
+});
+
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  if(!usersCache[u] || usersCache[u].password !== p){ err.textContent=t('err_login_wrong'); err.style.display='block'; return; }
+  currentUser = u;
+  localStorage.setItem('imp_currentUser', u);
+  err.style.display='none';
+  authModal.classList.remove('open');
+  updateAccountUI();
+  if(pendingBundle){ openBuyModalConfirm(); }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  currentUser = null;
+  localStorage.removeItem('imp_currentUser');
+  updateAccountUI();
+});
+
+// ---------- BUNDLE PURCHASE ----------
+const buyModal = document.getElementById('buyModal');
+
+function openBuyModal(count, price){
+  pendingBundle = { count, price };
+  if(!currentUser){
+    authModal.classList.add('open');
+    return;
+  }
+  openBuyModalConfirm();
+}
+
+function openBuyModalConfirm(){
+  document.getElementById('buyBundleLabel').textContent = pendingBundle.count + ' ' + t('invoices_word');
+  document.getElementById('buyBundlePrice').textContent = 'Rs ' + pendingBundle.price;
+  document.getElementById('buyStageSelect').style.display='block';
+  document.getElementById('buySuccess').classList.remove('show');
+  document.getElementById('buyTxnRef').value = '';
+  buyModal.classList.add('open');
+}
+
+document.getElementById('closeBuyBtn').addEventListener('click', ()=> buyModal.classList.remove('open'));
+buyModal.addEventListener('click', e=>{ if(e.target===buyModal) buyModal.classList.remove('open'); });
+
+document.getElementById('confirmBuyBtn').addEventListener('click', async ()=>{
+  const method = document.getElementById('buyMethod').value;
+  const ref = document.getElementById('buyTxnRef').value.trim();
+  const id = 'req_' + Date.now();
+  try{
+    await db.collection('imp_requests').doc(id).set({
+      username: currentUser,
+      count: pendingBundle.count,
+      price: pendingBundle.price,
+      method: method,
+      ref: ref,
+      status: 'pending',
+      createdAt: new Date().toLocaleString()
+    });
+  }catch(e){ alert(t('err_send_request')); return; }
+  document.getElementById('buyStageSelect').style.display = 'none';
+  document.getElementById('buySuccess').classList.add('show');
+});
+
+document.getElementById('buyContinueBtn').addEventListener('click', ()=>{
+  buyModal.classList.remove('open');
+  document.getElementById('buyStageSelect').style.display = 'block';
+  document.getElementById('buySuccess').classList.remove('show');
+  document.getElementById('buyTxnRef').value = '';
+  pendingBundle = null;
+  updateAccountUI();
+});
+
+// ---------- ADMIN PANEL ----------
+const adminLoginModal = document.getElementById('adminLoginModal');
+
+document.getElementById('adminOpenBtn').addEventListener('click', ()=>{
+  if(adminAuthed){ renderAdminPanel(); adminPanelModal.classList.add('open'); }
+  else{ adminLoginModal.classList.add('open'); }
+});
+document.getElementById('closeAdminLoginBtn').addEventListener('click', ()=> adminLoginModal.classList.remove('open'));
+adminLoginModal.addEventListener('click', e=>{ if(e.target===adminLoginModal) adminLoginModal.classList.remove('open'); });
+
+document.getElementById('adminLoginBtn').addEventListener('click', ()=>{
+  const val = document.getElementById('adminPassInput').value;
+  const err = document.getElementById('adminLoginError');
+  if(val === ADMIN_PASSWORD){
+    adminAuthed = true;
+    adminLoginModal.classList.remove('open');
+    document.getElementById('adminPassInput').value = '';
+    err.style.display = 'none';
+    renderAdminPanel();
+    adminPanelModal.classList.add('open');
+  } else {
+    err.textContent = t('err_admin_wrong');
+    err.style.display = 'block';
+  }
+});
+
+document.getElementById('closeAdminPanelBtn').addEventListener('click', ()=> adminPanelModal.classList.remove('open'));
+adminPanelModal.addEventListener('click', e=>{ if(e.target===adminPanelModal) adminPanelModal.classList.remove('open'); });
+
+function requestCardHTML(r, showActions){
+  const actions = showActions ? `
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-primary" style="padding:8px 16px;font-size:12.5px;" onclick="approveRequest('${r.id}')">${t('approve_btn')}</button>
+      <button class="btn btn-ghost" style="padding:8px 16px;font-size:12.5px;color:var(--danger);" onclick="rejectRequest('${r.id}')">${t('reject_btn')}</button>
+    </div>` : `<div style="font-size:11.5px;font-weight:700;margin-top:6px;color:${r.status==='approved' ? 'var(--success)' : 'var(--danger)'};">${r.status==='approved' ? t('approved_status') : t('rejected_status')}</div>`;
+  return `
+    <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;">
+        <span>${r.username}</span><span>${r.count} ${t('invoices_word')} — Rs ${r.price}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">${t('via_text')} ${r.method} ${r.ref ? '· '+t('ref_text')+': '+r.ref : ''} · ${r.createdAt}</div>
+      ${actions}
+    </div>`;
+}
+
+function renderAdminPanel(){
+  const requests = getRequests();
+  const pending = requests.filter(r=>r.status==='pending');
+  const past = requests.filter(r=>r.status!=='pending').reverse();
+  document.getElementById('pendingRequestsList').innerHTML = pending.length
+    ? pending.map(r=>requestCardHTML(r,true)).join('')
+    : `<p style="font-size:13px;color:var(--muted);">${t('no_pending')}</p>`;
+  document.getElementById('pastRequestsList').innerHTML = past.length
+    ? past.map(r=>requestCardHTML(r,false)).join('')
+    : `<p style="font-size:13px;color:var(--muted);">${t('no_past')}</p>`;
+
+  const users = getUsers();
+  const usernames = Object.keys(users);
+  document.getElementById('userAccountsList').innerHTML = usernames.length
+    ? usernames.map(u => `
+      <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;">${u}</div>
+          <div style="font-size:11.5px;color:var(--muted);">${users[u].credits} ${t('invoices_left_admin')}</div>
+        </div>
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px;color:var(--danger);" onclick="deleteUser('${u}')">${t('delete_btn')}</button>
+      </div>`).join('')
+    : `<p style="font-size:13px;color:var(--muted);">${t('no_users')}</p>`;
+}
+
+async function deleteUser(username){
+  if(!confirm(t('confirm_delete_user').replace('{u}', username))) return;
+  await db.collection('imp_users').doc(username).delete();
+  const toDelete = requestsCache.filter(r => r.username === username);
+  for(const r of toDelete){ await db.collection('imp_requests').doc(r.id).delete(); }
+  if(currentUser === username){
+    currentUser = null;
+    localStorage.removeItem('imp_currentUser');
+  }
+  updateAccountUI();
+}
+
+document.getElementById('clearAllDataBtn').addEventListener('click', async ()=>{
+  if(!confirm(t('confirm_clear_all'))) return;
+  const usersSnap = await db.collection('imp_users').get();
+  for(const d of usersSnap.docs){ await d.ref.delete(); }
+  const reqsSnap = await db.collection('imp_requests').get();
+  for(const d of reqsSnap.docs){ await d.ref.delete(); }
+  currentUser = null;
+  localStorage.removeItem('imp_currentUser');
+  updateAccountUI();
+});
+
+async function approveRequest(id){
+  const r = requestsCache.find(x=>x.id===id);
+  if(!r) return;
+  await db.collection('imp_requests').doc(id).update({ status:'approved' });
+  const existingCredits = usersCache[r.username] ? usersCache[r.username].credits : 0;
+  await db.collection('imp_users').doc(r.username).set({ credits: existingCredits + r.count }, { merge:true });
+}
+
+async function rejectRequest(id){
+  await db.collection('imp_requests').doc(id).update({ status:'rejected' });
+}
+
+updateAccountUI();
+applyI18n();
+if(typeof usingLocalFallback !== 'undefined' && usingLocalFallback){
+  document.getElementById('fallbackBanner').style.display = 'block';
+}
+</script>
+</body>
+</html>
